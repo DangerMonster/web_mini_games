@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>합이 10이 되는 사과게임</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="game-container">
+    <header class="game-header">
+      <h1>🍎 사과 합계 게임</h1>
+      <p class="game-subtitle">사과를 골라서 합이 10이 되도록 만들어보세요!</p>
+    </header>
+
+    <div class="game-stats">
+      <div class="stat-card">
+        <div class="stat-icon">⏱️</div>
+        <div class="stat-value" id="timer">100</div>
+        <div class="stat-label">남은 시간</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">🎯</div>
+        <div class="stat-value" id="score">0</div>
+        <div class="stat-label">점수</div>
+      </div>
+    </div>
+
+    <div class="timer-bar-container">
+      <div class="timer-bar" id="timer-bar"></div>
+    </div>
+
+    <div class="game-board-container">
+      <div id="game-board" class="game-board"></div>
+    </div>
+
+    <div class="game-message" id="message"></div>
+
+    <div class="game-controls">
+      <button class="control-btn start-btn" id="start-btn">
+        <span class="btn-icon">▶️</span>
+        <span class="btn-text">게임 시작</span>
+      </button>
+      <button class="control-btn reset-btn" id="reset-btn">
+        <span class="btn-icon">🔄</span>
+        <span class="btn-text">게임 리셋</span>
+      </button>
+    </div>
+
+    <div class="back-link">
+      <a href="../../index.html">← 메인으로 돌아가기</a>
+    </div>
+  </div>
+
+  <div id="gameover" class="game-over-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>🎉 게임 완료!</h2>
+      </div>
+      <div class="final-score">
+        <span class="score-number" id="final-score">0</span>
+        <span class="score-label">점</span>
+      </div>
+      <div class="modal-actions">
+        <button class="action-btn primary restart-btn">다시 하기</button>
+        <button class="action-btn secondary copy-btn">결과 공유</button>
+        <a href="../../index.html" class="action-btn secondary home-btn">다른 게임</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="copy-success" class="copy-notification">
+    📋 클립보드에 복사되었습니다!
+  </div>
+
+  <audio id="bgm" src="bgm.mp3" loop></audio>
+  <script src="game.js"></script>
+  <script>
+    // 개발자 도구/우클릭/단축키 방지
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C')) ||
+        (e.ctrlKey && e.key === 'U') ||
+        (e.ctrlKey && e.key === 'S')
+      ) {
+        e.preventDefault();
+        return false;
+      }
+    });
+
+    // 결과 복사 함수
+    function copyResult() {
+      const score = document.getElementById('score').textContent;
+      const text = `🍎 사과 합계 게임에서 ${score}점을 획득했습니다!\n\n🎮 인터넷 게임 모음에서 도전해보세요!`;
+      
+      navigator.clipboard.writeText(text).then(() => {
+        const notification = document.getElementById('copy-success');
+        notification.style.display = 'block';
+        setTimeout(() => {
+          notification.style.display = 'none';
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

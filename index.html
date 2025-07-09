@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>인터넷 게임 모음</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      box-sizing: border-box;
+    }
+    
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    h1 {
+      margin-top: 28px;
+      font-size: 2.1em;
+      letter-spacing: -1px;
+      color: #fff;
+    }
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 22px;
+      max-width: 900px;
+      margin: 28px auto 0 auto;
+      padding: 0 8px 32px 8px;
+    }
+    .game-card {
+      background: #fff;
+      border: 2px solid #e57373;
+      border-radius: 16px;
+      box-shadow: 0 2px 12px #e5737320;
+      padding: 18px 6px 12px 6px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: box-shadow 0.2s, border 0.2s, transform 0.15s;
+      cursor: pointer;
+      min-height: 110px;
+      position: relative;
+    }
+    .game-card:hover, .game-card:focus {
+      border: 3px solid #ff1744;
+      box-shadow: 0 6px 24px #e5737340;
+      transform: translateY(-4px) scale(1.03);
+      z-index: 2;
+    }
+    .game-icon {
+      font-size: 1.7em;
+      margin-bottom: 7px;
+      user-select: none;
+    }
+    .game-title {
+      font-size: 1em;
+      font-weight: bold;
+      color: #d32f2f;
+      margin-bottom: 3px;
+      letter-spacing: -0.5px;
+    }
+    .game-desc {
+      font-size: 0.85em;
+      color: #555;
+      margin-bottom: 0;
+      min-height: 18px;
+    }
+    @media (max-width: 1023px) {
+      .game-grid {
+        max-width: 700px;
+        gap: 16px;
+        padding: 0 4px 20px 4px;
+      }
+    }
+    @media (max-width: 767px) {
+      h1 {
+        font-size: 1.3em;
+        margin-top: 12px;
+      }
+      .game-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        margin-top: 10px;
+        padding: 0 2px 10px 2px;
+      }
+      .game-card {
+        padding: 10px 2px 7px 2px;
+        min-height: 80px;
+      }
+      .game-icon {
+        font-size: 1.1em;
+        margin-bottom: 3px;
+      }
+      .game-title {
+        font-size: 0.92em;
+      }
+      .game-desc {
+        font-size: 0.78em;
+        min-height: 12px;
+      }
+    }
+    @media (max-width: 480px) {
+      h1 {
+        font-size: 1em;
+        margin-top: 6px;
+      }
+      .game-grid {
+        grid-template-columns: 1fr;
+        gap: 6px;
+        margin-top: 4px;
+        padding: 0 1px 4px 1px;
+      }
+      .game-card {
+        padding: 7px 1px 4px 1px;
+        min-height: 60px;
+      }
+      .game-icon {
+        font-size: 0.95em;
+      }
+      .game-title {
+        font-size: 0.85em;
+      }
+      .game-desc {
+        font-size: 0.7em;
+        min-height: 8px;
+      }
+    }
+
+    /* 연락처 섹션 스타일 */
+    .contact-section {
+      margin-top: 40px;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .contact-info {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .contact-info h3 {
+      font-size: 1.5em;
+      margin-bottom: 15px;
+      color: #fff;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .email {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #4facfe;
+      margin-bottom: 10px;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .contact-desc {
+      font-size: 1em;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 0;
+    }
+
+    .feedback-section {
+      text-align: center;
+    }
+
+    .feedback-section h3 {
+      font-size: 1.3em;
+      margin-bottom: 20px;
+      color: #fff;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .feedback-form {
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    #feedback-text {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 1em;
+      resize: vertical;
+      backdrop-filter: blur(10px);
+      margin-bottom: 15px;
+    }
+
+    #feedback-text::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    #feedback-text:focus {
+      outline: none;
+      border-color: #4facfe;
+      box-shadow: 0 0 10px rgba(79, 172, 254, 0.3);
+    }
+
+    .feedback-btn {
+      padding: 12px 30px;
+      border: none;
+      border-radius: 25px;
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+      color: white;
+      font-size: 1em;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+    }
+
+    .feedback-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+    }
+
+    .feedback-btn:active {
+      transform: translateY(0);
+    }
+
+    /* 모바일 반응형 */
+    @media (max-width: 768px) {
+      .contact-section {
+        margin-top: 30px;
+        padding: 20px;
+      }
+
+      .contact-info h3 {
+        font-size: 1.3em;
+      }
+
+      .email {
+        font-size: 1.1em;
+      }
+
+      .feedback-section h3 {
+        font-size: 1.2em;
+      }
+
+      #feedback-text {
+        padding: 12px;
+        font-size: 0.9em;
+      }
+
+      .feedback-btn {
+        padding: 10px 25px;
+        font-size: 0.9em;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .contact-section {
+        margin-top: 20px;
+        padding: 15px;
+      }
+
+      .contact-info h3 {
+        font-size: 1.2em;
+      }
+
+      .email {
+        font-size: 1em;
+      }
+
+      .feedback-section h3 {
+        font-size: 1.1em;
+      }
+
+      #feedback-text {
+        padding: 10px;
+        font-size: 0.85em;
+      }
+
+      .feedback-btn {
+        padding: 8px 20px;
+        font-size: 0.85em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>🎮 인터넷 게임 모음 🎮</h1>
+      <div class="game-grid">
+      <a class="game-card" href="games/apple-sum10/index.html" tabindex="0">
+        <div class="game-icon">🍎</div>
+        <div class="game-title">합이 10이 되는 사과게임</div>
+        <div class="game-desc">사과를 골라 합이 10이 되면 점수 획득!</div>
+      </a>
+      <a class="game-card" href="games/color-match/index.html" tabindex="0">
+        <div class="game-icon">🟦</div>
+        <div class="game-title">색깔 맞추기 게임</div>
+        <div class="game-desc">같은 색 블록을 찾아 터치!</div>
+      </a>
+      <a class="game-card" href="games/memory-match/index.html" tabindex="0">
+        <div class="game-icon">🧠</div>
+        <div class="game-title">기억력 게임</div>
+        <div class="game-desc">카드를 뒤집어 같은 그림을 맞춰보세요.</div>
+      </a>
+      <a class="game-card" href="games/shadow-match/index.html" tabindex="0">
+        <div class="game-icon">🖼️</div>
+        <div class="game-title">그림자 찾기 게임</div>
+        <div class="game-desc">그림자와 같은 그림을 찾아 터치!</div>
+      </a>
+      <a class="game-card" href="games/simon-says/index.html" tabindex="0">
+        <div class="game-icon">🧩</div>
+        <div class="game-title">Simon Says (순서 기억)</div>
+        <div class="game-desc">순서를 기억해 버튼을 눌러보세요.</div>
+      </a>
+      <a class="game-card" href="games/chess/index.html" tabindex="0">
+        <div class="game-icon">♔</div>
+        <div class="game-title">체스 게임</div>
+        <div class="game-desc">흑백 기물로 즐기는 클래식 체스.</div>
+      </a>
+      <a class="game-card" href="games/omok/index.html" tabindex="0">
+        <div class="game-icon">⚫</div>
+        <div class="game-title">오목 게임</div>
+        <div class="game-desc">15x15 보드, 5목을 먼저 만들면 승리!</div>
+      </a>
+      <a class="game-card" href="games/timing-challenge/index.html" tabindex="0">
+        <div class="game-icon">⏱️</div>
+        <div class="game-title">7.77초 타이밍 챌린지</div>
+        <div class="game-desc">정확히 7.77초에 도전!</div>
+      </a>
+      <a class="game-card" href="games/sudoku/index.html" tabindex="0">
+        <div class="game-icon">🧩</div>
+        <div class="game-title">스도쿠 게임</div>
+        <div class="game-desc">난이도별 무작위 스도쿠 퍼즐!</div>
+      </a>
+    </div>
+
+    <div class="contact-section">
+      <div class="contact-info">
+        <h3>📧 개발자 연락처</h3>
+        <p class="email">monstermr489@gmail.com</p>
+        <p class="contact-desc">개선사항이나 버그 리포트를 보내주세요!</p>
+      </div>
+      
+      <div class="feedback-section">
+        <h3>💡 개선사항 제안</h3>
+        <div class="feedback-form">
+          <textarea id="feedback-text" placeholder="게임 개선사항이나 새로운 게임 아이디어를 적어주세요..." rows="4"></textarea>
+          <button onclick="sendFeedback()" class="feedback-btn">📤 제안 보내기</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // 개발자 도구/우클릭/단축키 방지
+      document.addEventListener('contextmenu', e => e.preventDefault());
+      document.addEventListener('keydown', e => {
+        if (
+          e.key === 'F12' ||
+          (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C')) ||
+          (e.ctrlKey && e.key === 'U') ||
+          (e.ctrlKey && e.key === 'S')
+        ) {
+          e.preventDefault();
+          return false;
+        }
+      });
+
+      // 개선사항 제안 함수
+      function sendFeedback() {
+        const feedbackText = document.getElementById('feedback-text').value.trim();
+        
+        if (!feedbackText) {
+          alert('개선사항을 입력해주세요!');
+          return;
+        }
+        
+        // 이메일 클라이언트로 메일 보내기
+        const subject = '인터넷 게임 모음 - 개선사항 제안';
+        const body = `개선사항 제안:\n\n${feedbackText}\n\n\n---\n이 메일은 인터넷 게임 모음 사이트에서 전송되었습니다.`;
+        const mailtoLink = `mailto:monstermr489@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+        
+        // 메일 클라이언트 열기
+        window.open(mailtoLink);
+        
+        // 입력창 초기화
+        document.getElementById('feedback-text').value = '';
+        
+        // 성공 메시지
+        alert('메일 클라이언트가 열렸습니다. 제안사항을 확인하고 보내주세요! 📧');
+      }
+    </script>
+  </body>
+  </html> 

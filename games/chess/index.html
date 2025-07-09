@@ -1,0 +1,851 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>체스 게임</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 800px;
+            width: 90%;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .turn-indicator {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .turn-indicator.white {
+            color: #ecf0f1;
+        }
+
+        .turn-indicator.black {
+            color: #2c3e50;
+        }
+
+        .move-count {
+            font-size: 1.1em;
+        }
+
+        .chess-board {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            gap: 0;
+            width: min(560px, 90vw);
+            height: min(560px, 90vw);
+            margin: 0 auto 20px auto;
+            border: 3px solid #8b4513;
+            border-radius: 10px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            max-width: 560px;
+            max-height: 560px;
+        }
+
+        .square {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: min(2.5em, 8vw);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+            -webkit-tap-highlight-color: transparent;
+            aspect-ratio: 1;
+        }
+
+        .square.white {
+            background: #f0d9b5;
+        }
+
+        .square.black {
+            background: #b58863;
+        }
+
+        .square.selected {
+            background: #ffd700 !important;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .square.valid-move {
+            background: #90ee90 !important;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .square.check {
+            background: #ff6b6b !important;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 107, 107, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 107, 107, 0); }
+        }
+
+        .piece {
+            transition: all 0.2s ease;
+            user-select: none;
+        }
+
+        .piece:hover {
+            transform: scale(1.1);
+        }
+
+        /* 흑 기물 스타일 */
+        .piece.black {
+            color: #2c3e50;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 백 기물 스타일 */
+        .piece.white {
+            color: #ecf0f1;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            min-height: 44px;
+            touch-action: manipulation;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .music-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: white;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .music-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* 모바일 최적화 */
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+                margin-bottom: 15px;
+            }
+            
+            .game-info {
+                padding: 12px;
+                margin-bottom: 15px;
+            }
+            
+            .turn-indicator {
+                font-size: 1.1em;
+            }
+            
+            .move-count {
+                font-size: 1em;
+            }
+            
+            .chess-board {
+                width: min(500px, 95vw);
+                height: min(500px, 95vw);
+                margin: 0 auto 15px auto;
+                aspect-ratio: 1;
+            }
+            
+            .square {
+                font-size: min(2.2em, 10vw);
+            }
+            
+            .controls {
+                gap: 10px;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+                min-height: 48px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .chess-board {
+                width: 95vw;
+                height: 95vw;
+                aspect-ratio: 1;
+            }
+            
+            .square {
+                font-size: min(1.8em, 12vw);
+            }
+            
+            .btn {
+                padding: 8px 16px;
+                font-size: 0.85em;
+            }
+        }
+
+        .game-over {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .game-over-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .game-over h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .winner {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            color: #f9ca24;
+        }
+
+        .share-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+
+        .share-title {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #f9ca24;
+        }
+
+        .share-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background: #2196F3;
+            color: white;
+        }
+
+        .share-btn:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+        }
+
+        .copy-success {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            z-index: 2000;
+            display: none;
+        }
+
+
+    </style>
+</head>
+<body>
+    <button class="music-toggle" onclick="toggleMusic()">🎵</button>
+    
+    <div class="game-container">
+        
+        <div class="game-info">
+            <div class="turn-indicator" id="turn-indicator">백 차례</div>
+            <div class="move-count">이동 횟수: <span id="move-count">0</span></div>
+        </div>
+        
+        <div class="chess-board" id="chess-board"></div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" onclick="resetGame()">새 게임</button>
+            <button class="btn btn-secondary" onclick="undoMove()">무르기</button>
+            <a href="../../index.html" class="btn btn-secondary">메인으로</a>
+        </div>
+    </div>
+
+    <div class="game-over" id="game-over">
+        <div class="game-over-content">
+            <h2>게임 종료!</h2>
+            <div class="winner" id="winner-text">백이 승리했습니다!</div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="restartGame()">다시 하기</button>
+                <a href="../../index.html" class="btn btn-secondary">다른 게임</a>
+            </div>
+            
+            <div class="share-section">
+                <div class="share-title">🎯 친구들에게 도전해보세요!</div>
+                <button class="share-btn" onclick="copyToClipboard()">
+                    📋 결과 복사하기
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="copy-success" id="copy-success">
+        텍스트가 클립보드에 복사되었습니다! 📋
+    </div>
+        </div>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.wav" type="audio/wav">
+    </audio>
+
+    <script>
+        // 체스 게임 상태
+        let board = [];
+        let selectedPiece = null;
+        let validMoves = [];
+        let currentPlayer = 'white';
+        let moveCount = 0;
+        let moveHistory = [];
+        let musicPlaying = false;
+
+        // 체스 기물 초기 배치
+        const initialBoard = [
+            ['♜', '♞', '♝', '♛', '♚', '♝', '♞', '♜'],
+            ['♟', '♟', '♟', '♟', '♟', '♟', '♟', '♟'],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['', '', '', '', '', '', '', ''],
+            ['♙', '♙', '♙', '♙', '♙', '♙', '♙', '♙'],
+            ['♖', '♘', '♗', '♕', '♔', '♗', '♘', '♖']
+        ];
+
+        // 기물 정보
+        const pieces = {
+            '♔': { name: '백 킹', color: 'white', value: 1000 },
+            '♕': { name: '백 퀸', color: 'white', value: 9 },
+            '♖': { name: '백 룩', color: 'white', value: 5 },
+            '♗': { name: '백 비숍', color: 'white', value: 3 },
+            '♘': { name: '백 나이트', color: 'white', value: 3 },
+            '♙': { name: '백 폰', color: 'white', value: 1 },
+            '♚': { name: '흑 킹', color: 'black', value: 1000 },
+            '♛': { name: '흑 퀸', color: 'black', value: 9 },
+            '♜': { name: '흑 룩', color: 'black', value: 5 },
+            '♝': { name: '흑 비숍', color: 'black', value: 3 },
+            '♞': { name: '흑 나이트', color: 'black', value: 3 },
+            '♟': { name: '흑 폰', color: 'black', value: 1 }
+        };
+
+        // 개발자 도구 차단
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || 
+                (e.ctrlKey && e.shiftKey && e.key === 'C') || (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // 음악 토글
+        function toggleMusic() {
+            const music = document.getElementById('bgMusic');
+            if (musicPlaying) {
+                music.pause();
+                musicPlaying = false;
+            } else {
+                music.play();
+                musicPlaying = true;
+            }
+        }
+
+        // 게임 초기화
+        function initGame() {
+            board = JSON.parse(JSON.stringify(initialBoard));
+            selectedPiece = null;
+            validMoves = [];
+            currentPlayer = 'white';
+            moveCount = 0;
+            moveHistory = [];
+            renderBoard();
+            updateUI();
+        }
+
+        // 보드 렌더링
+        function renderBoard() {
+            const boardElement = document.getElementById('chess-board');
+            boardElement.innerHTML = '';
+
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    const square = document.createElement('div');
+                    square.className = `square ${(row + col) % 2 === 0 ? 'white' : 'black'}`;
+                    square.dataset.row = row;
+                    square.dataset.col = col;
+
+                    const piece = board[row][col];
+                    if (piece) {
+                        const pieceElement = document.createElement('div');
+                        pieceElement.className = `piece ${pieces[piece].color}`;
+                        pieceElement.textContent = piece;
+                        square.appendChild(pieceElement);
+                    }
+
+                    // 선택된 기물 하이라이트
+                    if (selectedPiece && selectedPiece.row === row && selectedPiece.col === col) {
+                        square.classList.add('selected');
+                    }
+
+                    // 유효한 이동 위치 하이라이트
+                    if (validMoves.some(move => move.row === row && move.col === col)) {
+                        square.classList.add('valid-move');
+                    }
+
+                    square.addEventListener('click', () => handleSquareClick(row, col));
+                    boardElement.appendChild(square);
+                }
+            }
+        }
+
+        // 사각형 클릭 처리
+        function handleSquareClick(row, col) {
+            const piece = board[row][col];
+            
+            // 기물 선택
+            if (piece && pieces[piece].color === currentPlayer) {
+                selectedPiece = { row, col, piece };
+                validMoves = getValidMoves(row, col);
+                renderBoard();
+                return;
+            }
+
+            // 이동 실행
+            if (selectedPiece && validMoves.some(move => move.row === row && move.col === col)) {
+                const fromRow = selectedPiece.row;
+                const fromCol = selectedPiece.col;
+                const capturedPiece = board[row][col];
+
+                // 이동 기록
+                moveHistory.push({
+                    from: { row: fromRow, col: fromCol },
+                    to: { row, col },
+                    piece: selectedPiece.piece,
+                    captured: capturedPiece
+                });
+
+                // 기물 이동
+                board[row][col] = selectedPiece.piece;
+                board[fromRow][fromCol] = '';
+
+                // 폰 승급
+                if (selectedPiece.piece === '♙' && row === 0) {
+                    board[row][col] = '♕';
+                } else if (selectedPiece.piece === '♟' && row === 7) {
+                    board[row][col] = '♛';
+                }
+
+                selectedPiece = null;
+                validMoves = [];
+                currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+                moveCount++;
+
+                renderBoard();
+                updateUI();
+
+                // 체크메이트 확인
+                if (isCheckmate()) {
+                    showGameOver();
+                }
+            }
+        }
+
+        // 유효한 이동 위치 계산
+        function getValidMoves(row, col) {
+            const piece = board[row][col];
+            if (!piece) return [];
+
+            const moves = [];
+            const pieceInfo = pieces[piece];
+
+            switch (piece) {
+                case '♔': // 백 킹
+                case '♚': // 흑 킹
+                    for (let dr = -1; dr <= 1; dr++) {
+                        for (let dc = -1; dc <= 1; dc++) {
+                            if (dr === 0 && dc === 0) continue;
+                            const newRow = row + dr;
+                            const newCol = col + dc;
+                            if (isValidPosition(newRow, newCol) && canMoveTo(newRow, newCol, pieceInfo.color)) {
+                                moves.push({ row: newRow, col: newCol });
+                            }
+                        }
+                    }
+                    break;
+
+                case '♕': // 백 퀸
+                case '♛': // 흑 퀸
+                    moves.push(...getRookMoves(row, col, pieceInfo.color));
+                    moves.push(...getBishopMoves(row, col, pieceInfo.color));
+                    break;
+
+                case '♖': // 백 룩
+                case '♜': // 흑 룩
+                    moves.push(...getRookMoves(row, col, pieceInfo.color));
+                    break;
+
+                case '♗': // 백 비숍
+                case '♝': // 흑 비숍
+                    moves.push(...getBishopMoves(row, col, pieceInfo.color));
+                    break;
+
+                case '♘': // 백 나이트
+                case '♞': // 흑 나이트
+                    const knightMoves = [
+                        [-2, -1], [-2, 1], [-1, -2], [-1, 2],
+                        [1, -2], [1, 2], [2, -1], [2, 1]
+                    ];
+                    for (const [dr, dc] of knightMoves) {
+                        const newRow = row + dr;
+                        const newCol = col + dc;
+                        if (isValidPosition(newRow, newCol) && canMoveTo(newRow, newCol, pieceInfo.color)) {
+                            moves.push({ row: newRow, col: newCol });
+                        }
+                    }
+                    break;
+
+                case '♙': // 백 폰
+                    if (row > 0 && board[row - 1][col] === '') {
+                        moves.push({ row: row - 1, col });
+                        if (row === 6 && board[row - 2][col] === '') {
+                            moves.push({ row: row - 2, col });
+                        }
+                    }
+                    // 대각선 공격
+                    for (const dc of [-1, 1]) {
+                        const newCol = col + dc;
+                        if (isValidPosition(row - 1, newCol) && 
+                            board[row - 1][newCol] && 
+                            pieces[board[row - 1][newCol]].color === 'black') {
+                            moves.push({ row: row - 1, col: newCol });
+                        }
+                    }
+                    break;
+
+                case '♟': // 흑 폰
+                    if (row < 7 && board[row + 1][col] === '') {
+                        moves.push({ row: row + 1, col });
+                        if (row === 1 && board[row + 2][col] === '') {
+                            moves.push({ row: row + 2, col });
+                        }
+                    }
+                    // 대각선 공격
+                    for (const dc of [-1, 1]) {
+                        const newCol = col + dc;
+                        if (isValidPosition(row + 1, newCol) && 
+                            board[row + 1][newCol] && 
+                            pieces[board[row + 1][newCol]].color === 'white') {
+                            moves.push({ row: row + 1, col: newCol });
+                        }
+                    }
+                    break;
+            }
+
+            return moves;
+        }
+
+        // 룩 이동
+        function getRookMoves(row, col, color) {
+            const moves = [];
+            const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+            
+            for (const [dr, dc] of directions) {
+                let newRow = row + dr;
+                let newCol = col + dc;
+                
+                while (isValidPosition(newRow, newCol)) {
+                    const targetPiece = board[newRow][newCol];
+                    if (targetPiece === '') {
+                        moves.push({ row: newRow, col: newCol });
+                    } else {
+                        if (pieces[targetPiece].color !== color) {
+                            moves.push({ row: newRow, col: newCol });
+                        }
+                        break;
+                    }
+                    newRow += dr;
+                    newCol += dc;
+                }
+            }
+            
+            return moves;
+        }
+
+        // 비숍 이동
+        function getBishopMoves(row, col, color) {
+            const moves = [];
+            const directions = [[-1, -1], [-1, 1], [1, -1], [1, 1]];
+            
+            for (const [dr, dc] of directions) {
+                let newRow = row + dr;
+                let newCol = col + dc;
+                
+                while (isValidPosition(newRow, newCol)) {
+                    const targetPiece = board[newRow][newCol];
+                    if (targetPiece === '') {
+                        moves.push({ row: newRow, col: newCol });
+                    } else {
+                        if (pieces[targetPiece].color !== color) {
+                            moves.push({ row: newRow, col: newCol });
+                        }
+                        break;
+                    }
+                    newRow += dr;
+                    newCol += dc;
+                }
+            }
+            
+            return moves;
+        }
+
+        // 위치 유효성 검사
+        function isValidPosition(row, col) {
+            return row >= 0 && row < 8 && col >= 0 && col < 8;
+        }
+
+        // 이동 가능성 검사
+        function canMoveTo(row, col, color) {
+            const targetPiece = board[row][col];
+            return !targetPiece || pieces[targetPiece].color !== color;
+        }
+
+        // 체크메이트 확인 (간단한 버전)
+        function isCheckmate() {
+            // 킹이 잡혔는지 확인
+            let whiteKing = false;
+            let blackKing = false;
+            
+            for (let row = 0; row < 8; row++) {
+                for (let col = 0; col < 8; col++) {
+                    if (board[row][col] === '♔') whiteKing = true;
+                    if (board[row][col] === '♚') blackKing = true;
+                }
+            }
+            
+            return !whiteKing || !blackKing;
+        }
+
+        // UI 업데이트
+        function updateUI() {
+            const turnIndicator = document.getElementById('turn-indicator');
+            const moveCountElement = document.getElementById('move-count');
+            
+            turnIndicator.textContent = currentPlayer === 'white' ? '백 차례' : '흑 차례';
+            turnIndicator.className = `turn-indicator ${currentPlayer}`;
+            moveCountElement.textContent = moveCount;
+        }
+
+        // 게임 재시작
+        function resetGame() {
+            initGame();
+        }
+
+        // 무르기
+        function undoMove() {
+            if (moveHistory.length > 0) {
+                const lastMove = moveHistory.pop();
+                board[lastMove.from.row][lastMove.from.col] = lastMove.piece;
+                board[lastMove.to.row][lastMove.to.col] = lastMove.captured;
+                
+                currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+                moveCount--;
+                
+                selectedPiece = null;
+                validMoves = [];
+                
+                renderBoard();
+                updateUI();
+            }
+        }
+
+        // 게임 오버 표시
+        function showGameOver() {
+            const winner = currentPlayer === 'white' ? '흑' : '백';
+            document.getElementById('winner-text').textContent = `${winner}이 승리했습니다!`;
+            document.getElementById('game-over').style.display = 'flex';
+        }
+
+        // 게임 재시작
+        function restartGame() {
+            document.getElementById('game-over').style.display = 'none';
+            initGame();
+        }
+
+        // 공유 텍스트 생성
+        function generateShareText() {
+            const winner = document.getElementById('winner-text').textContent;
+            const moveCount = document.getElementById('move-count').textContent;
+            
+            return `♔ 체스 게임 결과!\n\n` +
+                   `🏆 ${winner}\n` +
+                   `📊 총 이동 횟수: ${moveCount}회\n\n` +
+                   `💪 너도 도전해봐! 전략적 사고를 키워보세요!\n\n` +
+                   `🎮 게임 링크: ${window.location.origin}${window.location.pathname.replace('/chess/index.html', '')}/index.html`;
+        }
+
+        // 클립보드 복사
+        function copyToClipboard() {
+            const shareText = generateShareText();
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    showCopySuccess();
+                }).catch(err => {
+                    fallbackCopyTextToClipboard(shareText);
+                });
+            } else {
+                fallbackCopyTextToClipboard(shareText);
+            }
+        }
+
+        // 클립보드 복사 폴백 (구형 브라우저 지원)
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showCopySuccess();
+            } catch (err) {
+                console.error('클립보드 복사 실패:', err);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        // 복사 성공 메시지 표시
+        function showCopySuccess() {
+            const copySuccess = document.getElementById('copy-success');
+            copySuccess.style.display = 'block';
+            setTimeout(() => {
+                copySuccess.style.display = 'none';
+            }, 2000);
+        }
+
+        // 게임 시작
+        initGame();
+    </script>
+</body>
+</html> 

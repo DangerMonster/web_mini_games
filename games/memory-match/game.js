@@ -1,0 +1,205 @@
+const CARD_PAIRS = 15;
+const TOTAL_CARDS = CARD_PAIRS * 2;
+const SHOW_TIME = 5; // 5초 전체 공개
+const GAME_TIME = 60; // 실제 게임 제한시간(초)
+const EMOJIS = [
+  '🍎','🍌','🍇','🍉','🍒','🍋','🍑','🍍','🥝','🥑','🍓','🍊','🍈','🥥','🍐'
+];
+let cards = [];
+let flipped = [];
+let matched = [];
+let canFlip = false;
+let score = 0;
+let timeLeft = 0;
+let timerInterval = null;
+let musicOn = true;
+let gameStarted = false;
+
+const board = document.getElementById('game-board');
+const timerEl = document.getElementById('timer');
+const scoreEl = document.getElementById('score');
+const messageEl = document.getElementById('message');
+const musicToggleBtn = document.getElementById('music-toggle');
+const bgm = document.getElementById('bgm');
+const gameoverDiv = document.getElementById('gameover');
+const resetBoardBtn = document.getElementById('reset-board');
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function createCards() {
+  const emojiPairs = shuffle([...EMOJIS, ...EMOJIS]).slice(0, TOTAL_CARDS);
+  cards = shuffle(emojiPairs.map((emoji, i) => ({
+    id: i,
+    emoji,
+    flipped: false,
+    matched: false
+  })));
+  flipped = [];
+  matched = [];
+}
+
+function renderBoard() {
+  board.innerHTML = '';
+  cards.forEach((card, idx) => {
+    const div = document.createElement('div');
+    div.className = 'card' + (card.flipped ? ' flipped' : '') + (card.matched ? ' matched' : '');
+    div.innerHTML = `
+      <div class="card-inner">
+        <div class="card-front">${card.emoji}</div>
+        <div class="card-back">?</div>
+      </div>
+    `;
+    div.addEventListener('click', () => handleFlip(idx));
+    board.appendChild(div);
+  });
+}
+
+function handleFlip(idx) {
+  if (!canFlip) return;
+  if (cards[idx].flipped || cards[idx].matched) return;
+  if (flipped.length === 2) return;
+  cards[idx].flipped = true;
+  flipped.push(idx);
+  renderBoard();
+  if (flipped.length === 2) {
+    canFlip = false;
+    setTimeout(() => {
+      const [i, j] = flipped;
+      if (cards[i].emoji === cards[j].emoji) {
+        cards[i].matched = true;
+        cards[j].matched = true;
+        score += 10;
+        updateScore();
+        messageEl.textContent = '+10점!';
+        setTimeout(() => { messageEl.textContent = ''; }, 800);
+        if (cards.every(card => card.matched)) {
+          showGameover();
+          return;
+        }
+      } else {
+        cards[i].flipped = false;
+        cards[j].flipped = false;
+      }
+      flipped = [];
+      renderBoard();
+      canFlip = true;
+    }, 900);
+  }
+}
+
+function updateScore() {
+  scoreEl.textContent = `점수: ${score}`;
+}
+
+function updateTimerBar() {
+  const timerBar = document.getElementById('timer-bar');
+  if (!timerBar) return;
+  let percent = 100;
+  if (!gameStarted) {
+    percent = Math.max(0, (timeLeft / SHOW_TIME) * 100);
+  } else {
+    percent = Math.max(0, (timeLeft / GAME_TIME) * 100);
+  }
+  timerBar.style.width = percent + '%';
+}
+
+function setMusic(on) {
+  musicOn = on;
+  if (musicOn) {
+    bgm.volume = 0.5;
+    bgm.play();
+    musicToggleBtn.textContent = '🔊 배경음악 끄기';
+  } else {
+    bgm.pause();
+    musicToggleBtn.textContent = '🔇 배경음악 켜기';
+  }
+}
+
+musicToggleBtn.onclick = () => setMusic(!musicOn);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) bgm.pause();
+  else if (musicOn) bgm.play();
+});
+
+resetBoardBtn.onclick = () => {
+  startGame();
+};
+
+function showGameover() {
+  canFlip = false;
+  gameStarted = false;
+  if (timerInterval) clearInterval(timerInterval);
+  gameoverDiv.innerHTML = `
+    <div class="gameover-score">최종 점수<br>${score}</div>
+    <button class="gameover-btn" id="retry-btn">다시하기</button>
+    <button class="gameover-btn" id="othergame-btn">다른 게임하기</button>
+  `;
+  gameoverDiv.style.display = 'flex';
+  document.getElementById('game-board').style.opacity = 0.2;
+  document.getElementById('message').style.display = 'none';
+  document.getElementById('info').style.opacity = 0.2;
+  document.getElementById('retry-btn').onclick = () => {
+    gameoverDiv.style.display = 'none';
+    document.getElementById('game-board').style.opacity = 1;
+    document.getElementById('message').style.display = '';
+    document.getElementById('info').style.opacity = 1;
+    startGame();
+  };
+  document.getElementById('othergame-btn').onclick = () => {
+    window.location.href = '../../index.html';
+  };
+}
+
+function startGame() {
+  score = 0;
+  timeLeft = SHOW_TIME;
+  gameStarted = false;
+  createCards();
+  cards.forEach(card => card.flipped = true);
+  renderBoard();
+  updateScore();
+  messageEl.textContent = '카드를 외우세요!';
+  canFlip = false;
+  gameoverDiv.style.display = 'none';
+  document.getElementById('game-board').style.opacity = 1;
+  document.getElementById('message').style.display = '';
+  document.getElementById('info').style.opacity = 1;
+  timerEl.textContent = `외우기 시간: ${timeLeft}`;
+  updateTimerBar();
+  if (timerInterval) clearInterval(timerInterval);
+  if (musicOn) setTimeout(() => bgm.play(), 200);
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    if (!gameStarted) {
+      timerEl.textContent = `외우기 시간: ${timeLeft}`;
+      updateTimerBar();
+      if (timeLeft <= 0) {
+        cards.forEach(card => card.flipped = false);
+        renderBoard();
+        messageEl.textContent = '두 장을 선택하세요!';
+        canFlip = true;
+        timeLeft = GAME_TIME;
+        gameStarted = true;
+        updateTimerBar();
+      }
+    } else {
+      timerEl.textContent = `남은 시간: ${timeLeft}`;
+      updateTimerBar();
+      if (timeLeft <= 0) {
+        clearInterval(timerInterval);
+        showGameover();
+      }
+    }
+  }, 1000);
+}
+
+window.onload = () => {
+  setMusic(true);
+  startGame();
+}; 

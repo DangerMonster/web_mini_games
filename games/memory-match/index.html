@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>기억력 게임 (Memory Match)</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>🧠 기억력 게임 (Memory Match)</h1>
+  <div id="info">
+    <span id="timer">남은 시간: 0</span>
+    <span id="score">점수: 0</span>
+  </div>
+  <div id="timer-bar-wrapper">
+    <div id="timer-bar" style="width:100%"></div>
+  </div>
+  <div id="game-board"></div>
+  <div id="message"></div>
+  <div id="gameover" style="display:none;"></div>
+  <div style="display:flex;justify-content:center;gap:12px;margin:24px auto 0 auto;max-width:400px;">
+    <button id="music-toggle">🔊 배경음악 끄기</button>
+    <button id="reset-board">🔄 게임판 초기화</button>
+  </div>
+  <audio id="bgm" src="bgm.mp3" loop></audio>
+  <a href="../../index.html" style="display:block;margin-top:30px;">← 메인으로 돌아가기</a>
+  <script src="game.js"></script>
+  <script>
+    // 개발자 도구/우클릭/단축키 방지
+    document.addEventListener('contextmenu', e => e.preventDefault());
+    document.addEventListener('keydown', e => {
+      if (
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C')) ||
+        (e.ctrlKey && e.key === 'U') ||
+        (e.ctrlKey && e.key === 'S')
+      ) {
+        e.preventDefault();
+        return false;
+      }
+    });
+  </script>
+</body>
+</html> 

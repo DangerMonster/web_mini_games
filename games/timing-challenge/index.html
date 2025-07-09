@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>7.77초 타이밍 챌린지</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 50%, #48dbfb 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+        }
+
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 90%;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+
+
+        .timer-display {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 30px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            min-height: 80px;
+        }
+
+        .target-time {
+            font-size: 1.5em;
+            color: #feca57;
+            font-weight: bold;
+        }
+
+        .game-status {
+            font-size: 1.3em;
+            margin-bottom: 30px;
+            min-height: 40px;
+        }
+
+        .click-button {
+            width: 200px;
+            height: 200px;
+            border: none;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+            color: white;
+            font-size: 2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .click-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .click-button:active {
+            transform: scale(0.95);
+        }
+
+        .click-button.disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .click-button.disabled:hover {
+            transform: none;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .result-display {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            min-height: 30px;
+        }
+
+        .accuracy-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .accuracy-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
+        }
+
+        .target-line {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 4px;
+            height: 100%;
+            background: #feca57;
+            transform: translateX(-50%);
+            box-shadow: 0 0 10px rgba(254, 202, 87, 0.8);
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .music-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: white;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .music-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .game-over {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .game-over-content {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        .game-over h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .final-stats {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .best-time {
+            color: #feca57;
+            font-weight: bold;
+        }
+
+        .average-time {
+            color: #48dbfb;
+            font-weight: bold;
+        }
+
+        .share-section {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+        }
+
+        .share-title {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: #feca57;
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .share-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .share-btn.copy {
+            background: #2196F3;
+            color: white;
+        }
+
+        .share-btn.copy:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+        }
+
+        .copy-success {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            font-size: 1.1em;
+            z-index: 2000;
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .game-container {
+                padding: 20px;
+                margin: 10px;
+                width: 95%;
+            }
+
+            h1 {
+                font-size: 2em;
+                margin-bottom: 15px;
+            }
+
+            .game-info {
+                flex-direction: column;
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .target-time {
+                font-size: 1.3em;
+            }
+
+            .timer-display {
+                font-size: 2.5em;
+                margin: 20px 0;
+                min-height: 60px;
+            }
+
+            .game-status {
+                font-size: 1.1em;
+                margin-bottom: 20px;
+            }
+
+            .click-button {
+                width: 180px;
+                height: 180px;
+                font-size: 1.8em;
+                margin-bottom: 20px;
+            }
+
+            .result-display {
+                font-size: 1em;
+                margin-bottom: 15px;
+            }
+
+            .accuracy-bar {
+                height: 15px;
+                margin-bottom: 15px;
+            }
+
+            .controls {
+                gap: 10px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+            }
+
+            .share-section {
+                margin-top: 15px;
+                padding: 15px;
+            }
+
+            .share-title {
+                font-size: 1.1em;
+                margin-bottom: 10px;
+            }
+
+            .share-btn {
+                padding: 12px 20px;
+                font-size: 1em;
+            }
+
+            .game-over-content {
+                padding: 30px 20px;
+                max-width: 90%;
+            }
+
+            .game-over h2 {
+                font-size: 1.8em;
+            }
+
+            .final-stats {
+                font-size: 1.1em;
+                line-height: 1.5;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-container {
+                padding: 15px;
+                margin: 5px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .timer-display {
+                font-size: 2.2em;
+            }
+
+            .click-button {
+                width: 150px;
+                height: 150px;
+                font-size: 1.5em;
+            }
+
+            .btn {
+                padding: 8px 16px;
+                font-size: 0.85em;
+            }
+
+            .share-btn {
+                padding: 10px 16px;
+                font-size: 0.9em;
+            }
+        }
+
+        /* 터치 디바이스 최적화 */
+        @media (hover: none) and (pointer: coarse) {
+            .click-button {
+                min-height: 60px;
+                min-width: 60px;
+            }
+
+            .btn {
+                min-height: 44px;
+                min-width: 44px;
+            }
+
+            .share-btn {
+                min-height: 44px;
+                min-width: 44px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="music-toggle" onclick="toggleMusic()">🎵</button>
+    
+    <div class="game-container">
+        <h1>⏱️ 7.77초 타이밍 챌린지</h1>
+        
+        <div class="timer-display" id="timer">0.00</div>
+        
+        <div class="game-status" id="game-status">시작 버튼을 눌러 게임을 시작하세요!</div>
+        
+        <button class="click-button" id="click-button" onclick="handleClick()" ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">시작!</button>
+        
+        <div class="result-display" id="result-display"></div>
+        
+        <div class="accuracy-bar">
+            <div class="accuracy-fill" id="accuracy-fill"></div>
+            <div class="target-line"></div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" onclick="startGame()">새 게임</button>
+            <a href="../../index.html" class="btn btn-secondary">메인으로</a>
+        </div>
+    </div>
+
+    <div class="game-over" id="game-over">
+        <div class="game-over-content">
+            <h2>게임 종료!</h2>
+            <div class="final-stats">
+                <div>정확도: <span id="final-score">0</span>%</div>
+                <div class="best-time">기록: <span id="best-accuracy">0</span>초</div>
+                <div class="average-time">오차: <span id="average-error">0</span>초</div>
+            </div>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="restartGame()">다시 하기</button>
+                <a href="../../index.html" class="btn btn-secondary">다른 게임</a>
+            </div>
+            
+            <div class="share-section">
+                <div class="share-title">🎯 친구들에게 도전해보세요!</div>
+                <div class="share-buttons">
+                    <button class="share-btn copy" onclick="copyToClipboard()">
+                        📋 결과 복사하기
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="copy-success" id="copy-success">
+        텍스트가 클립보드에 복사되었습니다! 📋
+    </div>
+        </div>
+    </div>
+
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.wav" type="audio/wav">
+    </audio>
+
+    <script>
+        // 게임 상태 변수들
+        let gameActive = false;
+        let startTime = 0;
+        let timerInterval = null;
+        let currentTime = 0;
+        let finalResult = null;
+        let musicPlaying = false;
+
+        const TARGET_TIME = 7.77;
+
+        // 개발자 도구 차단
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || 
+                (e.ctrlKey && e.shiftKey && e.key === 'C') || (e.ctrlKey && e.key === 'U')) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // 음악 토글
+        function toggleMusic() {
+            const music = document.getElementById('bgMusic');
+            if (musicPlaying) {
+                music.pause();
+                musicPlaying = false;
+            } else {
+                music.play();
+                musicPlaying = true;
+            }
+        }
+
+        // 게임 시작
+        function startGame() {
+            gameActive = false;
+            currentTime = 0;
+            finalResult = null;
+            
+            resetTimer();
+            document.getElementById('game-status').textContent = '시작 버튼을 눌러 게임을 시작하세요!';
+            document.getElementById('result-display').textContent = '';
+            document.getElementById('accuracy-fill').style.width = '0%';
+            
+            const clickButton = document.getElementById('click-button');
+            clickButton.textContent = '시작!';
+            clickButton.className = 'click-button';
+        }
+
+        // 타이머 시작
+        function startTimer() {
+            startTime = Date.now();
+            gameActive = true;
+            currentTime = 0;
+            
+            timerInterval = setInterval(() => {
+                currentTime = (Date.now() - startTime) / 1000;
+                document.getElementById('timer').textContent = currentTime.toFixed(2);
+            }, 10);
+            
+            document.getElementById('game-status').textContent = '7.77초에 맞춰서 클릭하세요!';
+            document.getElementById('click-button').textContent = '클릭!';
+        }
+
+        // 타이머 리셋
+        function resetTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+            document.getElementById('timer').textContent = '0.00';
+        }
+
+        // 클릭 처리
+        function handleClick() {
+            if (!gameActive) {
+                startTimer();
+                return;
+            }
+
+            // 타이머 정지
+            clearInterval(timerInterval);
+            gameActive = false;
+            
+            // 결과 계산
+            const timeDiff = Math.abs(currentTime - TARGET_TIME);
+            const accuracy = Math.max(0, 100 - (timeDiff * 100));
+            
+            // 결과 저장
+            finalResult = {
+                time: currentTime,
+                accuracy: accuracy,
+                timeDiff: timeDiff
+            };
+            
+            // 결과 표시
+            const resultText = `시간: ${currentTime.toFixed(2)}초 | 오차: ${timeDiff.toFixed(2)}초 | 정확도: ${accuracy.toFixed(1)}%`;
+            document.getElementById('result-display').textContent = resultText;
+            
+            // 정확도 바 업데이트
+            const accuracyFill = document.getElementById('accuracy-fill');
+            const accuracyPercent = (currentTime / (TARGET_TIME * 2)) * 100;
+            accuracyFill.style.width = Math.min(100, accuracyPercent) + '%';
+            
+            // 게임 종료
+            showGameOver();
+        }
+
+        // 터치 이벤트 처리 (모바일 최적화)
+        function handleTouchStart(event) {
+            event.preventDefault();
+            // 터치 시작 시 시각적 피드백
+            event.target.style.transform = 'scale(0.95)';
+        }
+
+        function handleTouchEnd(event) {
+            event.preventDefault();
+            // 터치 종료 시 원래 크기로 복원
+            event.target.style.transform = 'scale(1)';
+            // 클릭 처리
+            handleClick();
+        }
+
+
+
+        // 게임 오버 표시
+        function showGameOver() {
+            document.getElementById('final-score').textContent = finalResult.accuracy.toFixed(1);
+            document.getElementById('best-accuracy').textContent = finalResult.time.toFixed(2);
+            document.getElementById('average-error').textContent = finalResult.timeDiff.toFixed(2);
+            document.getElementById('game-over').style.display = 'flex';
+        }
+
+        // 게임 재시작
+        function restartGame() {
+            document.getElementById('game-over').style.display = 'none';
+            startGame();
+        }
+
+        // 공유 텍스트 생성
+        function generateShareText() {
+            const accuracy = document.getElementById('final-score').textContent;
+            const time = document.getElementById('best-accuracy').textContent;
+            const error = document.getElementById('average-error').textContent;
+            
+            return `⏱️ 7.77초 타이밍 챌린지 결과!\n\n` +
+                   `🎯 정확도: ${accuracy}%\n` +
+                   `⏰ 기록: ${time}초\n` +
+                   `📊 오차: ${error}초\n\n` +
+                   `💪 너도 도전해봐! 정확한 타이밍 감각을 테스트해보세요!\n\n` +
+                   `🎮 게임 링크: ${window.location.origin}${window.location.pathname.replace('/timing-challenge/index.html', '')}/index.html`;
+        }
+
+
+
+        // 클립보드 복사
+        function copyToClipboard() {
+            const shareText = generateShareText();
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(shareText).then(() => {
+                    showCopySuccess();
+                }).catch(err => {
+                    fallbackCopyTextToClipboard(shareText);
+                });
+            } else {
+                fallbackCopyTextToClipboard(shareText);
+            }
+        }
+
+        // 클립보드 복사 폴백 (구형 브라우저 지원)
+        function fallbackCopyTextToClipboard(text) {
+            const textArea = document.createElement('textarea');
+            textArea.value = text;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-999999px';
+            textArea.style.top = '-999999px';
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showCopySuccess();
+            } catch (err) {
+                console.error('클립보드 복사 실패:', err);
+            }
+            
+            document.body.removeChild(textArea);
+        }
+
+        // 복사 성공 메시지 표시
+        function showCopySuccess() {
+            const copySuccess = document.getElementById('copy-success');
+            copySuccess.style.display = 'block';
+            setTimeout(() => {
+                copySuccess.style.display = 'none';
+            }, 2000);
+        }
+
+        // 게임 시작
+        startGame();
+    </script>
+</body>
+</html> 
