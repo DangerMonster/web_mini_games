@@ -362,7 +362,7 @@
         
         <div class="controls">
             <button class="btn btn-primary" onclick="startGame()">게임 시작</button>
-            <a href="../../index.html" class="btn btn-secondary">메인으로</a>
+            <a href="../../" class="btn btn-secondary">메인으로</a>
         </div>
     </div>
 
@@ -372,7 +372,7 @@
             <div class="final-score">최종 점수: <span id="final-score">0</span></div>
             <div class="controls">
                 <button class="btn btn-primary" onclick="restartGame()">다시 하기</button>
-                <a href="../../index.html" class="btn btn-secondary">다른 게임</a>
+                <a href="../../" class="btn btn-secondary">다른 게임</a>
             </div>
             
             <div class="share-section">
@@ -591,7 +591,7 @@
             return `🧩 Simon Says 게임 결과!\n\n` +
                    `🎯 최종 점수: ${finalScore}점\n\n` +
                    `💪 너도 도전해봐! 순서 기억 게임으로 두뇌를 훈련해보세요!\n\n` +
-                   `🎮 게임 링크: ${window.location.origin}${window.location.pathname.replace('/simon-says/index.html', '')}/index.html`;
+                   `🎮 게임 링크: ${window.location.origin}${window.location.pathname.replace('/simon-says/game.html', '')}`;
         }
 
         // 클립보드 복사

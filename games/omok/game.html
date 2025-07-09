@@ -363,7 +363,7 @@
         <div class="controls">
             <button class="btn btn-primary" onclick="resetGame()">새 게임</button>
             <button class="btn btn-secondary" onclick="undoMove()">무르기</button>
-            <a href="../../index.html" class="btn btn-secondary">메인으로</a>
+            <a href="../../" class="btn btn-secondary">메인으로</a>
         </div>
     </div>
 
@@ -373,7 +373,7 @@
             <div class="winner" id="winner-text">흑이 승리했습니다!</div>
             <div class="controls">
                 <button class="btn btn-primary" onclick="restartGame()">다시 하기</button>
-                <a href="../../index.html" class="btn btn-secondary">다른 게임</a>
+                <a href="../../" class="btn btn-secondary">다른 게임</a>
             </div>
             
             <div class="share-section">
@@ -618,7 +618,7 @@
                    `🏆 ${winner}\n` +
                    `📊 총 착수: ${moveCount}회\n\n` +
                    `💪 너도 도전해봐! 전략적 사고로 5목을 완성해보세요!\n\n` +
-                   `🎮 게임 링크: ${window.location.origin}${window.location.pathname.replace('/omok/index.html', '')}/index.html`;
+                   `🎮 게임 링크: ${window.location.origin}${window.location.pathname.replace('/omok/game.html', '')}`;
         }
 
         // 클립보드 복사
