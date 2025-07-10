@@ -100,10 +100,12 @@
         .cell.selected {
             background: #bbdefb;
             box-shadow: inset 0 0 0 2px #1976d2;
+            color: #1976d2;
         }
 
         .cell.highlight {
             background: #f3e5f5;
+            color: #7b1fa2;
         }
 
         .cell.error {
@@ -347,12 +349,8 @@
         <div class="controls">
             <button class="btn btn-primary" id="new-game">새 게임</button>
             <button class="btn btn-secondary" id="check">정답 확인</button>
-            <button class="btn btn-secondary" id="hint">힌트</button>
-            <select class="btn btn-secondary" id="difficulty-select">
-                <option value="easy">쉬움</option>
-                <option value="medium" selected>보통</option>
-                <option value="hard">어려움</option>
-            </select>
+            <button class="btn btn-secondary" id="erase">지우기</button>
+            <!-- 난이도 선택 제거 -->
             <a href="../../" class="btn btn-secondary">← 메인으로</a>
         </div>
     </div>
