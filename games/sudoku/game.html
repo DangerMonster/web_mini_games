@@ -64,6 +64,7 @@
             grid-template-rows: repeat(9, 1fr);
             gap: 1px;
             width: min(450px, 90vw);
+            max-width: 450px;
             aspect-ratio: 1 / 1;
             margin: 0 auto 20px auto;
             background: #333;
@@ -85,6 +86,9 @@
             transition: all 0.2s ease;
             color: #333;
             -webkit-tap-highlight-color: transparent;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .cell:focus {
@@ -127,8 +131,8 @@
         }
 
         /* 가로 굵은 선 (3x3 박스 구분) */
-        .sudoku-board > div:nth-child(n+19):nth-child(-n+27),
-        .sudoku-board > div:nth-child(n+46):nth-child(-n+54) {
+        .cell:nth-child(n+19):nth-child(-n+27),
+        .cell:nth-child(n+46):nth-child(-n+54) {
             border-bottom: 2px solid #333;
         }
 
@@ -345,6 +349,7 @@
             
             .sudoku-board {
                 width: min(400px, 95vw);
+                max-width: 400px;
                 aspect-ratio: 1 / 1;
                 margin: 0 auto 15px auto;
             }
@@ -377,7 +382,8 @@
 
         @media (max-width: 480px) {
             .sudoku-board {
-                width: 98vw;
+                width: 95vw;
+                max-width: 95vw;
                 aspect-ratio: 1 / 1;
             }
             
