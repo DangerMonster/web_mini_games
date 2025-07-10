@@ -3,6 +3,26 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <style>
+    /* ... 기존 스타일 ... */
+    .share-btn {
+      background: linear-gradient(135deg, #ffd700, #ff8c00);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 25px;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 10px auto;
+      transition: transform 0.2s;
+    }
+    .share-btn:hover {
+      transform: translateY(-2px);
+    }
+  </style>
   <title>그림자 찾기 게임 (Shadow Match)</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -31,7 +51,7 @@
       <option value="hard">어려움</option>
     </select>
   </div>
-  <audio id="bgm" src="bgm.mp3" loop></audio>
+  <audio id="bgm" src="bgm.mp3" loop autoplay muted></audio>
   <a href="../../" style="display:block;margin-top:30px;">← 메인으로 돌아가기</a>
   <script src="game.js"></script>
   <script>

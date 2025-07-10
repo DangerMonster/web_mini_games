@@ -221,6 +221,42 @@
             transform: translateY(-2px);
         }
 
+        .share-btn {
+            background: linear-gradient(135deg, #00b09b, #96c93d);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 10px auto;
+            transition: transform 0.2s;
+            min-height: 44px;
+        }
+
+        .share-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .copy-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            display: none;
+            z-index: 1000;
+        }
+
         .music-toggle {
             position: fixed;
             top: 20px;
@@ -256,700 +292,92 @@
         }
 
         .game-over-content {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            padding: 40px;
+            background: white;
+            padding: 30px;
             border-radius: 20px;
             text-align: center;
-            max-width: 400px;
-            width: 90%;
+            color: #333;
+            max-width: 90%;
+            width: 400px;
         }
 
         .game-over h2 {
             font-size: 2em;
             margin-bottom: 20px;
+            color: #333;
         }
 
-        .completion-time {
-            font-size: 1.5em;
-            margin-bottom: 30px;
-            color: #4caf50;
-        }
-
-        .share-section {
-            margin-top: 20px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-        }
-
-        .share-title {
+        .game-over p {
             font-size: 1.2em;
-            margin-bottom: 15px;
-            color: #f9ca24;
+            margin-bottom: 30px;
+            color: #666;
         }
 
-        .share-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9em;
-            font-weight: bold;
-            transition: all 0.3s ease;
+        .game-over .buttons {
             display: flex;
-            align-items: center;
-            gap: 5px;
-            background: #2196F3;
-            color: white;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
 
-        .share-btn:hover {
-            background: #1976D2;
-            transform: translateY(-2px);
-        }
-
-        .copy-success {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            font-size: 1.1em;
-            z-index: 2000;
-            display: none;
-        }
-
-        /* 모바일 최적화 */
-        @media (max-width: 768px) {
+        @media (max-width: 600px) {
             .game-container {
-                padding: 20px;
+                padding: 15px;
             }
-            
+
             h1 {
                 font-size: 2em;
-                margin-bottom: 15px;
             }
-            
-            .game-info {
-                padding: 12px;
-                margin-bottom: 15px;
-            }
-            
-            .timer {
-                font-size: 1.1em;
-            }
-            
-            .difficulty {
-                font-size: 1em;
-            }
-            
-            .sudoku-board {
-                width: min(400px, 95vw);
-                max-width: 400px;
-                aspect-ratio: 1 / 1;
-                margin: 0 auto 15px auto;
-            }
-            
-            .cell {
-                font-size: min(1.3em, 5vw);
-            }
-            
-            .number-pad {
-                gap: 6px;
-                margin-bottom: 15px;
-            }
-            
-            .number-btn {
-                width: min(40px, 12vw);
-                height: min(40px, 12vw);
-                font-size: min(1.1em, 4vw);
-            }
-            
-            .controls {
-                gap: 10px;
-            }
-            
-            .btn {
-                padding: 10px 20px;
-                font-size: 0.9em;
-                min-height: 48px;
-            }
-        }
 
-        @media (max-width: 480px) {
-            .sudoku-board {
-                width: 95vw;
-                max-width: 95vw;
-                aspect-ratio: 1 / 1;
-            }
-            
-            .cell {
-                font-size: min(1.1em, 6vw);
-            }
-            
-            .number-btn {
-                width: min(35px, 15vw);
-                height: min(35px, 15vw);
-                font-size: min(1em, 5vw);
+            .number-pad {
+                gap: 4px;
             }
         }
     </style>
 </head>
 <body>
-    <button class="music-toggle" onclick="toggleMusic()">🎵</button>
-    
     <div class="game-container">
-        
+        <h1>🎲 스도쿠</h1>
         <div class="game-info">
-            <div class="timer">⏱️ <span id="timer">00:00</span></div>
-            <div class="difficulty">
-                난이도: 
-                <select id="difficulty-select" onchange="onDifficultyChange()">
-                    <option value="easy">쉬움</option>
-                    <option value="normal">보통</option>
-                    <option value="hard">어려움</option>
-                </select>
-            </div>
+            <div class="timer">시간: 00:00</div>
+            <div class="difficulty">난이도: 보통</div>
         </div>
-        
-        <div class="sudoku-board" id="sudoku-board"></div>
-        
-        <div class="number-pad" id="number-pad"></div>
-        
+        <div class="sudoku-board"></div>
+        <div class="number-pad"></div>
         <div class="controls">
-            <button class="btn btn-primary" onclick="newGame()">새 게임</button>
-            <button class="btn btn-secondary" onclick="checkSolution()">정답 확인</button>
-            <button class="btn btn-secondary" onclick="clearCell()">🗑️ 지우기</button>
-            <a href="../../" class="btn btn-secondary">메인으로</a>
+            <button class="btn btn-primary" id="new-game">새 게임</button>
+            <button class="btn btn-secondary" id="check">정답 확인</button>
+            <button class="btn btn-secondary" id="hint">힌트</button>
+            <select class="btn btn-secondary" id="difficulty-select">
+                <option value="easy">쉬움</option>
+                <option value="medium" selected>보통</option>
+                <option value="hard">어려움</option>
+            </select>
+            <a href="../../" class="btn btn-secondary">← 메인으로</a>
         </div>
     </div>
 
     <div class="game-over" id="game-over">
         <div class="game-over-content">
-            <h2>🎉 완성!</h2>
-            <div class="completion-time" id="completion-time">완성 시간: 00:00</div>
-            <div class="controls">
-                <button class="btn btn-primary" onclick="restartGame()">다시 하기</button>
+            <h2>🎉 게임 완료!</h2>
+            <p>걸린 시간: <span id="final-time">00:00</span></p>
+            <p>난이도: <span id="final-difficulty">보통</span></p>
+            <div class="buttons">
+                <button class="btn btn-primary" id="play-again">다시 하기</button>
+                <button class="share-btn" id="share-btn">🔗 친구에게 공유하기</button>
                 <a href="../../" class="btn btn-secondary">다른 게임</a>
-            </div>
-            
-            <div class="share-section">
-                <div class="share-title">🎯 친구들에게 도전해보세요!</div>
-                <button class="share-btn" onclick="copyToClipboard()">
-                    📋 결과 복사하기
-                </button>
             </div>
         </div>
     </div>
 
-    <div class="copy-success" id="copy-success">
-        텍스트가 클립보드에 복사되었습니다! 📋
+    <div class="copy-notification" id="copy-success">
+        📋 클립보드에 복사되었습니다!
     </div>
 
-    <audio id="bgMusic" loop>
-        <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.wav" type="audio/wav">
-    </audio>
+    <button class="music-toggle" id="music-toggle">🔇</button>
+    <audio id="bgm" src="bgm.mp3" loop></audio>
 
     <script>
-        // 게임 상태
-        let board = [];
-        let solution = [];
-        let selectedCell = null;
-        let startTime = Date.now();
-        let timerInterval;
-        let musicPlaying = false;
-        let currentDifficulty = 'normal';
-
-        // 스도쿠 보드 생성
-        function createBoard() {
-            const boardElement = document.getElementById('sudoku-board');
-            boardElement.innerHTML = '';
-            
-            for (let i = 0; i < 9; i++) {
-                for (let j = 0; j < 9; j++) {
-                    const cell = document.createElement('input');
-                    cell.type = 'text';
-                    cell.className = 'cell';
-                    cell.maxLength = 1;
-                    cell.dataset.row = i;
-                    cell.dataset.col = j;
-                    
-                    cell.addEventListener('click', () => selectCell(cell));
-                    cell.addEventListener('input', (e) => handleInput(e, i, j));
-                    cell.addEventListener('keydown', (e) => handleKeydown(e, i, j));
-                    
-                    boardElement.appendChild(cell);
-                }
-            }
-        }
-
-        // 숫자 패드 생성
-        function createNumberPad() {
-            const padElement = document.getElementById('number-pad');
-            padElement.innerHTML = '';
-            
-            for (let i = 1; i <= 9; i++) {
-                const btn = document.createElement('button');
-                btn.className = 'number-btn';
-                btn.textContent = i;
-                btn.onclick = () => inputNumber(i);
-                padElement.appendChild(btn);
-            }
-        }
-
-        // 셀 선택
-        function selectCell(cell) {
-            // 이전 선택 해제
-            document.querySelectorAll('.cell').forEach(c => {
-                c.classList.remove('selected');
-                c.classList.remove('highlight');
-            });
-            
-            // 새 셀 선택
-            cell.classList.add('selected');
-            selectedCell = cell;
-            
-            // 같은 숫자 하이라이트
-            const value = cell.value;
-            if (value) {
-                document.querySelectorAll('.cell').forEach(c => {
-                    if (c.value === value) {
-                        c.classList.add('highlight');
-                    }
-                });
-            }
-            
-            // 숫자 패드 활성화
-            updateNumberPad();
-        }
-
-        // 입력 처리
-        function handleInput(e, row, col) {
-            const value = e.target.value;
-            
-            // 원본 셀은 수정 불가
-            if (e.target.classList.contains('original')) {
-                e.target.value = board[row][col];
-                return;
-            }
-            
-            // 숫자만 허용
-            if (value && !/^[1-9]$/.test(value)) {
-                e.target.value = '';
-                return;
-            }
-            
-            // 보드 업데이트
-            if (value) {
-                board[row][col] = parseInt(value);
-            } else {
-                board[row][col] = 0;
-            }
-            
-            // 에러 체크
-            checkErrors();
-            updateNumberPad();
-            
-            // 완성 체크
-            if (isComplete()) {
-                endGame();
-            }
-        }
-
-        // 키보드 입력 처리
-        function handleKeydown(e, row, col) {
-            if (e.key >= '1' && e.key <= '9') {
-                inputNumber(parseInt(e.key));
-            } else if (e.key === 'Backspace' || e.key === 'Delete') {
-                clearCell();
-            } else if (e.key === 'ArrowUp' && row > 0) {
-                document.querySelector(`[data-row="${row-1}"][data-col="${col}"]`).click();
-            } else if (e.key === 'ArrowDown' && row < 8) {
-                document.querySelector(`[data-row="${row+1}"][data-col="${col}"]`).click();
-            } else if (e.key === 'ArrowLeft' && col > 0) {
-                document.querySelector(`[data-row="${row}"][data-col="${col-1}"]`).click();
-            } else if (e.key === 'ArrowRight' && col < 8) {
-                document.querySelector(`[data-row="${row}"][data-col="${col+1}"]`).click();
-            }
-        }
-
-        // 숫자 입력
-        function inputNumber(num) {
-            if (selectedCell && !selectedCell.classList.contains('original')) {
-                selectedCell.value = num;
-                board[selectedCell.dataset.row][selectedCell.dataset.col] = num;
-                checkErrors();
-                updateNumberPad();
-                
-                if (isComplete()) {
-                    endGame();
-                }
-            }
-        }
-
-        // 셀 지우기
-        function clearCell() {
-            if (selectedCell && !selectedCell.classList.contains('original')) {
-                selectedCell.value = '';
-                board[selectedCell.dataset.row][selectedCell.dataset.col] = 0;
-                checkErrors();
-                updateNumberPad();
-            }
-        }
-
-        // 숫자 패드 업데이트
-        function updateNumberPad() {
-            document.querySelectorAll('.number-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            if (selectedCell) {
-                const value = selectedCell.value;
-                if (value) {
-                    const btn = document.querySelector(`.number-btn:nth-child(${value})`);
-                    if (btn) btn.classList.add('active');
-                }
-            }
-        }
-
-        // 에러 체크
-        function checkErrors() {
-            document.querySelectorAll('.cell').forEach(cell => {
-                cell.classList.remove('error');
-            });
-            
-            // 행 체크
-            for (let i = 0; i < 9; i++) {
-                const row = board[i];
-                const seen = new Set();
-                for (let j = 0; j < 9; j++) {
-                    if (row[j] !== 0) {
-                        if (seen.has(row[j])) {
-                            // 에러 표시
-                            for (let k = 0; k < 9; k++) {
-                                if (board[i][k] === row[j]) {
-                                    document.querySelector(`[data-row="${i}"][data-col="${k}"]`).classList.add('error');
-                                }
-                            }
-                        } else {
-                            seen.add(row[j]);
-                        }
-                    }
-                }
-            }
-            
-            // 열 체크
-            for (let j = 0; j < 9; j++) {
-                const seen = new Set();
-                for (let i = 0; i < 9; i++) {
-                    if (board[i][j] !== 0) {
-                        if (seen.has(board[i][j])) {
-                            // 에러 표시
-                            for (let k = 0; k < 9; k++) {
-                                if (board[k][j] === board[i][j]) {
-                                    document.querySelector(`[data-row="${k}"][data-col="${j}"]`).classList.add('error');
-                                }
-                            }
-                        } else {
-                            seen.add(board[i][j]);
-                        }
-                    }
-                }
-            }
-            
-            // 3x3 박스 체크
-            for (let box = 0; box < 9; box++) {
-                const seen = new Set();
-                const startRow = Math.floor(box / 3) * 3;
-                const startCol = (box % 3) * 3;
-                
-                for (let i = startRow; i < startRow + 3; i++) {
-                    for (let j = startCol; j < startCol + 3; j++) {
-                        if (board[i][j] !== 0) {
-                            if (seen.has(board[i][j])) {
-                                // 에러 표시
-                                for (let k = startRow; k < startRow + 3; k++) {
-                                    for (let l = startCol; l < startCol + 3; l++) {
-                                        if (board[k][l] === board[i][j]) {
-                                            document.querySelector(`[data-row="${k}"][data-col="${l}"]`).classList.add('error');
-                                        }
-                                    }
-                                }
-                            } else {
-                                seen.add(board[i][j]);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // 완성 체크
-        function isComplete() {
-            for (let i = 0; i < 9; i++) {
-                for (let j = 0; j < 9; j++) {
-                    if (board[i][j] === 0) return false;
-                }
-            }
-            return true;
-        }
-
-        // 게임 종료
-        function endGame() {
-            clearInterval(timerInterval);
-            const completionTime = document.getElementById('completion-time');
-            const timeElapsed = Math.floor((Date.now() - startTime) / 1000);
-            const minutes = Math.floor(timeElapsed / 60);
-            const seconds = timeElapsed % 60;
-            completionTime.textContent = `완성 시간: ${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            
-            document.getElementById('game-over').style.display = 'flex';
-        }
-
-        // 난이도 선택 핸들러
-        function onDifficultyChange() {
-            const sel = document.getElementById('difficulty-select');
-            currentDifficulty = sel.value;
-            newGame(true);
-        }
-
-        // 새 게임 (난이도 변경 시에는 난이도 유지)
-        function newGame(keepDifficulty) {
-            if (!keepDifficulty) {
-                // 난이도 순환이 아니라, 드롭다운에서 선택하도록 변경
-                // 아무 동작 없음
-            }
-            // 드롭다운 UI와 동기화
-            document.getElementById('difficulty-select').value = currentDifficulty;
-            generatePuzzle();
-            startTimer();
-        }
-
-        // 게임 재시작
-        function restartGame() {
-            document.getElementById('game-over').style.display = 'none';
-            generatePuzzle();
-            startTimer();
-        }
-
-        // 타이머 시작
-        function startTimer() {
-            startTime = Date.now();
-            clearInterval(timerInterval);
-            
-            timerInterval = setInterval(() => {
-                const timeElapsed = Math.floor((Date.now() - startTime) / 1000);
-                const minutes = Math.floor(timeElapsed / 60);
-                const seconds = timeElapsed % 60;
-                document.getElementById('timer').textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            }, 1000);
-        }
-
-        // 정답 확인
-        function checkSolution() {
-            // 간단한 검증 (실제로는 더 복잡한 로직 필요)
-            let isValid = true;
-            
-            // 빈 셀 체크
-            for (let i = 0; i < 9; i++) {
-                for (let j = 0; j < 9; j++) {
-                    if (board[i][j] === 0) {
-                        isValid = false;
-                        break;
-                    }
-                }
-            }
-            
-            if (isValid) {
-                alert('🎉 정답입니다!');
-            } else {
-                alert('❌ 아직 완성되지 않았습니다.');
-            }
-        }
-
-        // 퍼즐 생성 (난이도별 20개 중 무작위)
-        function generatePuzzle() {
-            // 난이도별 퍼즐 배열 (여기서는 각 3개만 예시, 실제로는 20개로 확장)
-            const puzzles = {
-                easy: [
-                    [
-                        [5,3,0,0,7,0,0,0,0],
-                        [6,0,0,1,9,5,0,0,0],
-                        [0,9,8,0,0,0,0,6,0],
-                        [8,0,0,0,6,0,0,0,3],
-                        [4,0,0,8,0,3,0,0,1],
-                        [7,0,0,0,2,0,0,0,6],
-                        [0,6,0,0,0,0,2,8,0],
-                        [0,0,0,4,1,9,0,0,5],
-                        [0,0,0,0,8,0,0,7,9]
-                    ],
-                    [
-                        [0,0,0,6,0,0,4,0,0],
-                        [7,0,0,0,0,3,6,0,0],
-                        [0,0,0,0,9,1,0,8,0],
-                        [0,0,0,0,0,0,0,0,0],
-                        [0,5,0,1,8,0,0,0,3],
-                        [0,0,0,3,0,6,0,4,5],
-                        [0,4,0,2,0,0,0,6,0],
-                        [9,0,3,0,0,0,0,0,0],
-                        [0,2,0,0,0,0,1,0,0]
-                    ],
-                    [
-                        [1,0,0,4,8,9,0,0,6],
-                        [7,3,0,0,0,0,0,4,0],
-                        [0,0,0,0,0,1,2,9,5],
-                        [0,0,7,1,2,0,6,0,0],
-                        [5,0,0,7,0,3,0,0,8],
-                        [0,0,6,0,9,5,7,0,0],
-                        [9,1,4,6,0,0,0,0,0],
-                        [0,2,0,0,0,0,0,3,7],
-                        [8,0,0,5,1,2,0,0,4]
-                    ]
-                ],
-                normal: [
-                    [
-                        [0,0,0,2,6,0,7,0,1],
-                        [6,8,0,0,7,0,0,9,0],
-                        [1,9,0,0,0,4,5,0,0],
-                        [8,2,0,1,0,0,0,4,0],
-                        [0,0,4,6,0,2,9,0,0],
-                        [0,5,0,0,0,3,0,2,8],
-                        [0,0,9,3,0,0,0,7,4],
-                        [0,4,0,0,5,0,0,3,6],
-                        [7,0,3,0,1,8,0,0,0]
-                    ],
-                    [
-                        [0,2,0,6,0,8,0,0,0],
-                        [5,8,0,0,0,9,7,0,0],
-                        [0,0,0,0,4,0,0,0,0],
-                        [3,7,0,0,0,0,5,0,0],
-                        [6,0,0,0,0,0,0,0,4],
-                        [0,0,8,0,0,0,0,1,3],
-                        [0,0,0,0,2,0,0,0,0],
-                        [0,0,9,8,0,0,0,3,6],
-                        [0,0,0,3,0,6,0,9,0]
-                    ],
-                    [
-                        [0,0,0,0,0,7,0,0,9],
-                        [0,0,0,0,0,0,0,4,5],
-                        [0,0,0,0,0,0,0,3,0],
-                        [0,0,1,0,0,0,0,0,0],
-                        [0,0,0,0,8,0,0,0,0],
-                        [0,0,0,0,0,0,2,0,0],
-                        [0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,1,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0]
-                    ]
-                ],
-                hard: [
-                    [
-                        [0,0,0,6,0,0,4,0,0],
-                        [7,0,0,0,0,3,6,0,0],
-                        [0,0,0,0,9,1,0,8,0],
-                        [0,0,0,0,0,0,0,0,0],
-                        [0,5,0,1,8,0,0,0,3],
-                        [0,0,0,3,0,6,0,4,5],
-                        [0,4,0,2,0,0,0,6,0],
-                        [9,0,3,0,0,0,0,0,0],
-                        [0,2,0,0,0,0,1,0,0]
-                    ],
-                    [
-                        [0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0],
-                        [0,0,0,0,0,0,0,0,0]
-                    ],
-                    [
-                        [8,0,0,0,0,0,0,0,0],
-                        [0,0,3,6,0,0,0,0,0],
-                        [0,7,0,0,9,0,2,0,0],
-                        [0,5,0,0,0,7,0,0,0],
-                        [0,0,0,0,4,5,7,0,0],
-                        [0,0,0,1,0,0,0,3,0],
-                        [0,0,1,0,0,0,0,6,8],
-                        [0,0,8,5,0,0,0,1,0],
-                        [0,9,0,0,0,0,4,0,0]
-                    ]
-                ]
-            };
-            // 난이도별 무작위 퍼즐 선택
-            const arr = puzzles[currentDifficulty];
-            const idx = Math.floor(Math.random() * arr.length);
-            board = JSON.parse(JSON.stringify(arr[idx]));
-            solution = JSON.parse(JSON.stringify(arr[idx]));
-            // 보드 표시
-            updateBoard();
-            // 선택 해제
-            selectedCell = null;
-            document.querySelectorAll('.cell').forEach(c => {
-                c.classList.remove('selected', 'highlight', 'error');
-            });
-        }
-
-        // 보드 업데이트
-        function updateBoard() {
-            const cells = document.querySelectorAll('.cell');
-            for (let i = 0; i < 9; i++) {
-                for (let j = 0; j < 9; j++) {
-                    const cell = cells[i * 9 + j];
-                    const value = board[i][j];
-                    
-                    if (value === 0) {
-                        cell.value = '';
-                        cell.classList.remove('original');
-                    } else {
-                        cell.value = value;
-                        // 원본 숫자 표시
-                        if (solution[i][j] !== 0) {
-                            cell.classList.add('original');
-                        } else {
-                            cell.classList.remove('original');
-                        }
-                    }
-                }
-            }
-        }
-
-        // 음악 토글
-        function toggleMusic() {
-            const audio = document.getElementById('bgMusic');
-            if (musicPlaying) {
-                audio.pause();
-                musicPlaying = false;
-            } else {
-                audio.play();
-                musicPlaying = true;
-            }
-        }
-
-        // 클립보드 복사
-        function copyToClipboard() {
-            const timeElapsed = Math.floor((Date.now() - startTime) / 1000);
-            const minutes = Math.floor(timeElapsed / 60);
-            const seconds = timeElapsed % 60;
-            const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            
-            const difficultyNames = { 'easy': '쉬움', 'normal': '보통', 'hard': '어려움' };
-            const text = `🧩 스도쿠 ${difficultyNames[currentDifficulty]} 난이도 완성! ⏱️ ${timeString}\n\n🎮 https://onlineminigame.kro.kr/ 에서 도전해보세요!`;
-            
-            navigator.clipboard.writeText(text).then(() => {
-                const success = document.getElementById('copy-success');
-                success.style.display = 'block';
-                setTimeout(() => {
-                    success.style.display = 'none';
-                }, 2000);
-            });
-        }
-
         // 개발자 도구/우클릭/단축키 방지
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
@@ -964,10 +392,29 @@
             }
         });
 
-        // 초기화
-        createBoard();
-        createNumberPad();
-        newGame(true);
+        // 결과 공유 함수
+        function copyResult() {
+            const time = document.getElementById('final-time').textContent;
+            const difficulty = document.getElementById('final-difficulty').textContent;
+            const text = `🎲 스도쿠 게임 ${difficulty} 난이도를 ${time}만에 클리어했어요!\n\n🧩 당신의 논리력을 시험해보세요!\n\n🔗 https://onlineminigame.kro.kr/`;
+            
+            navigator.clipboard.writeText(text)
+                .then(() => {
+                    const notification = document.getElementById('copy-success');
+                    notification.style.display = 'block';
+                    setTimeout(() => {
+                        notification.style.display = 'none';
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('클립보드 복사 실패:', err);
+                    alert('클립보드 복사에 실패했습니다. 직접 링크를 복사해주세요.');
+                });
+        }
+
+        // 공유하기 버튼 이벤트 리스너
+        document.getElementById('share-btn').addEventListener('click', copyResult);
     </script>
+    <script src="game.js"></script>
 </body>
 </html> 

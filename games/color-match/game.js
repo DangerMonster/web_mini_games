@@ -189,6 +189,7 @@ function showGameover() {
     <div class="gameover-score">최종 점수<br>${score}</div>
     <button class="gameover-btn" id="retry-btn">다시하기</button>
     <button class="gameover-btn" id="othergame-btn">다른 게임하기</button>
+    <button class="share-btn" id="share-btn">🔗 친구에게 공유하기</button>
   `;
   gameoverDiv.style.display = 'flex';
   document.getElementById('game-board').style.opacity = 0.2;
@@ -205,6 +206,16 @@ function showGameover() {
   };
   document.getElementById('othergame-btn').onclick = () => {
     window.location.href = '../../index.html';
+  };
+  document.getElementById('share-btn').onclick = async () => {
+    const shareText = `🎮 순발력 테스트에서 ${score}점을 획득했어요!\n\n🎯 당신의 순발력은 어떠신가요? 지금 도전해보세요!\n\n🔗 https://onlineminigame.kro.kr/`;
+    try {
+      await navigator.clipboard.writeText(shareText);
+      alert('클립보드에 복사되었습니다! 친구들에게 공유해보세요 😊');
+    } catch (err) {
+      console.error('클립보드 복사 실패:', err);
+      alert('클립보드 복사에 실패했습니다. 직접 링크를 복사해주세요.');
+    }
   };
 }
 

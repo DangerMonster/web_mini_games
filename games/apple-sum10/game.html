@@ -81,16 +81,21 @@
 
     // 결과 복사 함수
     function copyResult() {
-      const score = document.getElementById('score').textContent;
-      const text = `🍎 사과 합계 게임에서 ${score}점을 획득했습니다!\n\n🎮 https://onlineminigame.kro.kr/ 에서 도전해보세요!`;
+      const score = document.getElementById('final-score').textContent;
+      const text = `🍎 사과 합계 게임에서 ${score}점을 획득했어요!\n\n🎯 숫자가 적힌 사과들을 골라 합이 10이 되도록 만들어보세요!\n\n🔗 https://onlineminigame.kro.kr/`;
       
-      navigator.clipboard.writeText(text).then(() => {
-        const notification = document.getElementById('copy-success');
-        notification.style.display = 'block';
-        setTimeout(() => {
-          notification.style.display = 'none';
-        }, 2000);
-      });
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          const notification = document.getElementById('copy-success');
+          notification.style.display = 'block';
+          setTimeout(() => {
+            notification.style.display = 'none';
+          }, 2000);
+        })
+        .catch(err => {
+          console.error('클립보드 복사 실패:', err);
+          alert('클립보드 복사에 실패했습니다. 직접 링크를 복사해주세요.');
+        });
     }
   </script>
 </body>
