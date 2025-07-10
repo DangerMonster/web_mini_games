@@ -11,8 +11,6 @@ let gameState = {
 
 // DOM 요소들
 const gameBoard = document.getElementById('game-board');
-const scoreElement = document.getElementById('score');
-const timeElement = document.getElementById('timer');
 const gameMessage = document.getElementById('message');
 const timerBar = document.getElementById('timer-bar');
 const startBtn = document.getElementById('start-btn');
@@ -25,6 +23,8 @@ const copyBtn = document.querySelector('.modal-actions .copy-btn');
 let isDragging = false;
 let lastTouchTime = 0;
 let touchStartPos = { x: 0, y: 0 };
+let dragPath = []; // 드래그 경로 추적
+let dragStartApple = null; // 드래그 시작 사과
 
 // 게임 초기화
 function initGame() {
@@ -121,6 +121,11 @@ function addEventListeners() {
     gameBoard.addEventListener('touchmove', handleTouchMove, { passive: false });
     gameBoard.addEventListener('touchend', handleTouchEnd, { passive: false });
     
+    // 게임 보드 컨테이너에 드래그 방지 이벤트 추가
+    const gameBoardContainer = document.querySelector('.game-board-container');
+    gameBoardContainer.addEventListener('mousedown', preventDragOutside);
+    gameBoardContainer.addEventListener('touchstart', preventDragOutside, { passive: false });
+    
     // 버튼 이벤트
     startBtn.addEventListener('click', startGame);
     resetBtn.addEventListener('click', resetGame);
@@ -141,6 +146,17 @@ function addEventListeners() {
     document.addEventListener('keydown', handleKeyDown);
 }
 
+// 사과판 밖에서 드래그 방지
+function preventDragOutside(e) {
+    const target = e.target;
+    // 사과판(.game-board) 내부가 아닌 경우 드래그 방지
+    if (!target.closest('.game-board')) {
+        e.preventDefault();
+        e.stopPropagation();
+            isDragging = false;
+}
+}
+
 // 마우스 이벤트 핸들러
 function handleMouseDown(e) {
     const apple = e.target.closest('.apple');
@@ -148,6 +164,8 @@ function handleMouseDown(e) {
     
     e.preventDefault();
     isDragging = true;
+    dragStartApple = apple;
+    dragPath = [apple];
     selectApple(apple);
 }
 
@@ -158,14 +176,29 @@ function handleMouseOver(e) {
     if (!apple) return;
     
     e.preventDefault();
-    selectApple(apple);
+    
+    // 드래그 경로에 추가
+    if (!dragPath.some(pathApple => pathApple === apple)) {
+        dragPath.push(apple);
+        selectApple(apple);
+    }
 }
 
 function handleMouseUp(e) {
+    if (!isDragging) return;
+    
     isDragging = false;
+    
+    // 드래그 경로의 모든 사과 선택
+    selectDragPath();
+    
     if (gameState.isGameActive) {
         checkSum();
     }
+    
+    // 드래그 상태 초기화
+    dragPath = [];
+    dragStartApple = null;
 }
 
 // 터치 이벤트 핸들러 (모바일 최적화)
@@ -179,6 +212,8 @@ function handleTouchStart(e) {
     
     const apple = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.apple');
     if (apple) {
+        dragStartApple = apple;
+        dragPath = [apple];
         selectApple(apple);
     }
 }
@@ -192,11 +227,9 @@ function handleTouchMove(e) {
     const apple = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.apple');
     
     if (apple) {
-        // 터치 감도 향상 - 더 작은 움직임에도 반응
-        const deltaX = Math.abs(touch.clientX - touchStartPos.x);
-        const deltaY = Math.abs(touch.clientY - touchStartPos.y);
-        
-        if (deltaX > 5 || deltaY > 5) {
+        // 드래그 경로에 추가
+        if (!dragPath.some(pathApple => pathApple === apple)) {
+            dragPath.push(apple);
             selectApple(apple);
         }
     }
@@ -206,18 +239,41 @@ function handleTouchEnd(e) {
     e.preventDefault();
     isDragging = false;
     
-    // 터치 지속 시간 체크 (짧은 터치도 인식)
-    const touchDuration = Date.now() - lastTouchTime;
-    if (touchDuration < 100) {
-        const touch = e.changedTouches[0];
-        const apple = document.elementFromPoint(touch.clientX, touch.clientY)?.closest('.apple');
-        if (apple) {
-            selectApple(apple);
-        }
-    }
+    // 드래그 경로의 모든 사과 선택
+    selectDragPath();
     
     if (gameState.isGameActive) {
         checkSum();
+    }
+    
+    // 드래그 상태 초기화
+    dragPath = [];
+    dragStartApple = null;
+}
+
+// 드래그 경로의 모든 사과 선택
+function selectDragPath() {
+    // 기존 선택 해제
+    gameState.selectedApples.forEach(apple => {
+        const appleElement = gameState.gameBoard[apple.row][apple.col];
+        if (appleElement) {
+            appleElement.classList.remove('selected');
+        }
+    });
+    gameState.selectedApples = [];
+    
+    // 드래그 경로의 모든 사과 선택
+    dragPath.forEach(apple => {
+        const row = parseInt(apple.dataset.row);
+        const col = parseInt(apple.dataset.col);
+        const number = parseInt(apple.dataset.number);
+        
+        apple.classList.add('selected');
+        gameState.selectedApples.push({ row, col, number });
+    });
+    
+    if (gameState.isGameActive) {
+        updateGameMessage();
     }
 }
 
@@ -239,38 +295,50 @@ function handleKeyDown(e) {
     }
 }
 
-// 사과 선택
+// 사과 선택 (드래그 중에는 선택만, 드래그 끝날 때 경로 전체 선택)
 function selectApple(apple) {
     const row = parseInt(apple.dataset.row);
     const col = parseInt(apple.dataset.col);
     const number = parseInt(apple.dataset.number);
     
-    // 이미 선택된 사과인지 확인
-    const isAlreadySelected = gameState.selectedApples.some(
-        selected => selected.row === row && selected.col === col
-    );
-    
-    if (isAlreadySelected) {
-        // 선택 해제
-        apple.classList.remove('selected');
-        gameState.selectedApples = gameState.selectedApples.filter(
-            selected => !(selected.row === row && selected.col === col)
-        );
-    } else {
-        // 선택
+    // 드래그 중에는 선택만 (해제는 드래그 끝날 때)
+    if (isDragging) {
         apple.classList.add('selected');
-        gameState.selectedApples.push({ row, col, number });
+        // 중복 선택 방지
+        const isAlreadySelected = gameState.selectedApples.some(
+            selected => selected.row === row && selected.col === col
+        );
+        if (!isAlreadySelected) {
+            gameState.selectedApples.push({ row, col, number });
+        }
+    } else {
+        // 드래그가 아닐 때는 기존 방식 (개별 선택/해제)
+        const isAlreadySelected = gameState.selectedApples.some(
+            selected => selected.row === row && selected.col === col
+        );
         
-        // 모바일에서 시각적 피드백 강화
-        if ('ontouchstart' in window) {
-            apple.style.transform = 'scale(1.15)';
-            setTimeout(() => {
-                apple.style.transform = '';
-            }, 150);
+        if (isAlreadySelected) {
+            // 선택 해제
+            apple.classList.remove('selected');
+            gameState.selectedApples = gameState.selectedApples.filter(
+                selected => !(selected.row === row && selected.col === col)
+            );
+        } else {
+            // 선택
+            apple.classList.add('selected');
+            gameState.selectedApples.push({ row, col, number });
         }
     }
     
-    if (gameState.isGameActive) {
+    // 모바일에서 시각적 피드백 강화
+    if ('ontouchstart' in window) {
+        apple.style.transform = 'scale(1.15)';
+        setTimeout(() => {
+            apple.style.transform = '';
+        }, 150);
+    }
+    
+    if (gameState.isGameActive && !isDragging) {
         updateGameMessage();
     }
 }
@@ -422,7 +490,7 @@ function goHome() {
 
 // 결과 복사
 function copyResult() {
-    const text = `🍎 사과 게임 결과: ${gameState.score}점\n\n밥묵자 게임에서 도전해보세요!`;
+    const text = `🍎 사과 합계 게임에서 ${gameState.score}점을 획득했습니다!\n\n🎮 https://onlineminigame.kro.kr/ 에서 도전해보세요!`;
     
     if (navigator.clipboard) {
         navigator.clipboard.writeText(text).then(() => {
@@ -478,9 +546,6 @@ function updateGameMessage() {
 
 // 화면 업데이트
 function updateDisplay() {
-    scoreElement.textContent = gameState.score;
-    timeElement.textContent = gameState.timeLeft;
-    
     // 타이머 바 업데이트
     const percentage = (gameState.timeLeft / 60) * 100;
     timerBar.style.width = `${percentage}%`;

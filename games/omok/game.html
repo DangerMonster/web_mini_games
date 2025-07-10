@@ -13,7 +13,9 @@
 
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #8B4513 0%, #A0522D 100%);
+            background: linear-gradient(135deg, #8B4513 0%, #A0522D 25%, #CD853F 50%, #D2691E 75%, #B8860B 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -22,6 +24,12 @@
             overflow-x: hidden;
             overflow-y: auto;
             padding: 10px;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .game-container {
@@ -75,9 +83,10 @@
         .omok-board {
             display: grid;
             grid-template-columns: repeat(15, 1fr);
+            grid-template-rows: repeat(15, 1fr);
             gap: 0;
             width: min(660px, 90vw);
-            height: min(660px, 90vw);
+            aspect-ratio: 1 / 1;
             margin: 0 auto 20px auto;
             background: #DEB887;
             border: 3px solid #8B4513;
@@ -85,12 +94,12 @@
             padding: min(20px, 3vw);
             position: relative;
             max-width: 100%;
-            max-height: 60vh;
         }
 
         .board-cell {
             width: 100%;
             height: 100%;
+            aspect-ratio: 1 / 1;
             border: 1px solid #8B4513;
             display: flex;
             justify-content: center;
@@ -236,9 +245,8 @@
             
             .omok-board {
                 width: min(400px, 85vw);
-                height: min(400px, 85vw);
+                aspect-ratio: 1 / 1;
                 margin: 0 auto 10px auto;
-                max-height: 50vh;
                 padding: 10px;
             }
             
@@ -265,8 +273,7 @@
             
             .omok-board {
                 width: 80vw;
-                height: 80vw;
-                max-height: 45vh;
+                aspect-ratio: 1 / 1;
                 padding: 8px;
             }
             
@@ -361,9 +368,8 @@
         @media (max-width: 700px) {
             .omok-board {
                 width: min(350px, 80vw);
-                height: min(350px, 80vw);
+                aspect-ratio: 1 / 1;
                 padding: 10px;
-                max-height: 45vh;
             }
 
             .board-cell {
