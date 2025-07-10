@@ -64,32 +64,50 @@ function handleFlip(idx) {
   if (!canFlip) return;
   if (cards[idx].flipped || cards[idx].matched) return;
   if (flipped.length === 2) return;
+  
   cards[idx].flipped = true;
   flipped.push(idx);
   renderBoard();
+  
   if (flipped.length === 2) {
     canFlip = false;
     setTimeout(() => {
       const [i, j] = flipped;
       if (cards[i].emoji === cards[j].emoji) {
+        // 매치 성공
         cards[i].matched = true;
         cards[j].matched = true;
         score += 10;
         updateScore();
-        messageEl.textContent = '+10점!';
-        setTimeout(() => { messageEl.textContent = ''; }, 800);
+        messageEl.textContent = '🎉 매치 성공! +10점';
+        messageEl.style.color = '#6bcf7f';
+        setTimeout(() => { 
+          messageEl.textContent = ''; 
+          messageEl.style.color = '#fff';
+        }, 1000);
+        
+        // 모든 카드가 매치되었는지 확인
         if (cards.every(card => card.matched)) {
-          showGameover();
+          setTimeout(() => {
+            showGameover();
+          }, 500);
           return;
         }
       } else {
+        // 매치 실패
         cards[i].flipped = false;
         cards[j].flipped = false;
+        messageEl.textContent = '❌ 틀렸습니다! 다시 시도하세요';
+        messageEl.style.color = '#ff6b6b';
+        setTimeout(() => { 
+          messageEl.textContent = ''; 
+          messageEl.style.color = '#fff';
+        }, 1000);
       }
       flipped = [];
       renderBoard();
       canFlip = true;
-    }, 900);
+    }, 1000);
   }
 }
 

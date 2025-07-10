@@ -11,62 +11,152 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --accent-color: #f9ca24;
+            --text-color: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --glass-bg: rgba(255, 255, 255, 0.1);
+        }
+
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: white;
+            color: var(--text-color);
             overflow: hidden;
+            position: relative;
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
         }
 
         .game-container {
-            background: rgba(255, 255, 255, 0.1);
+            background: var(--glass-bg);
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 30px;
             text-align: center;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px var(--shadow-color);
             max-width: 600px;
             width: 90%;
+            position: relative;
+            overflow: hidden;
         }
 
         h1 {
             font-size: 2.5em;
             margin-bottom: 20px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            text-shadow: 2px 2px 4px var(--shadow-color);
+            animation: titleGlow 2s ease-in-out infinite;
         }
 
-        .score-display {
-            font-size: 1.5em;
+        .difficulty-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
             margin-bottom: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 10px;
-            border-radius: 10px;
+            flex-wrap: wrap;
+        }
+
+        .difficulty-btn {
+            padding: 8px 16px;
+            border: 2px solid var(--glass-bg);
+            border-radius: 15px;
+            background: transparent;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .difficulty-btn.active {
+            background: var(--accent-color);
+            border-color: var(--accent-color);
+            transform: scale(1.05);
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: var(--glass-bg);
+            padding: 10px 20px;
+            border-radius: 15px;
+            min-width: 120px;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--accent-color);
         }
 
         .timer-bar {
             width: 100%;
             height: 10px;
-            background: rgba(255, 255, 255, 0.3);
+            background: var(--glass-bg);
             border-radius: 5px;
             margin-bottom: 20px;
             overflow: hidden;
+            position: relative;
         }
 
         .timer-fill {
             height: 100%;
-            background: linear-gradient(90deg, #ff6b6b, #ffa500);
+            background: linear-gradient(90deg, #ff6b6b, var(--accent-color));
             width: 100%;
             transition: width 0.1s linear;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timer-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.3),
+                transparent
+            );
+            animation: timerShine 2s linear infinite;
         }
 
         .game-status {
             font-size: 1.2em;
             margin-bottom: 20px;
             min-height: 30px;
+            padding: 10px;
+            border-radius: 10px;
+            background: var(--glass-bg);
+            animation: statusPulse 2s ease-in-out infinite;
         }
 
         .simon-grid {
@@ -77,6 +167,7 @@
             max-width: 400px;
             margin-left: auto;
             margin-right: auto;
+            perspective: 1000px;
         }
 
         .simon-button {
@@ -86,11 +177,12 @@
             border-radius: 50%;
             cursor: pointer;
             font-size: min(3em, 8vw);
-            transition: all 0.2s ease;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px var(--shadow-color);
             position: relative;
             overflow: hidden;
             -webkit-tap-highlight-color: transparent;
+            transform-style: preserve-3d;
         }
 
         .simon-button::before {
@@ -109,26 +201,19 @@
             opacity: 1;
         }
 
+        .simon-button.active {
+            transform: scale(0.95) translateZ(-20px);
+        }
+
         .simon-button.active::before {
             opacity: 1;
             background: rgba(255, 255, 255, 0.6);
         }
 
-        .simon-button.red {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-        }
-
-        .simon-button.blue {
-            background: linear-gradient(135deg, #4ecdc4, #44a08d);
-        }
-
-        .simon-button.green {
-            background: linear-gradient(135deg, #45b7d1, #96c93d);
-        }
-
-        .simon-button.yellow {
-            background: linear-gradient(135deg, #f9ca24, #f0932b);
-        }
+        .simon-button.red { background: linear-gradient(135deg, #ff6b6b, #ee5a52); }
+        .simon-button.blue { background: linear-gradient(135deg, #4ecdc4, #44a08d); }
+        .simon-button.green { background: linear-gradient(135deg, #45b7d1, #96c93d); }
+        .simon-button.yellow { background: linear-gradient(135deg, #f9ca24, #f0932b); }
 
         .controls {
             display: flex;
@@ -146,24 +231,46 @@
             font-weight: bold;
             transition: all 0.3s ease;
             text-decoration: none;
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             min-height: 44px;
+            min-width: 120px;
             touch-action: manipulation;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: var(--text-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-primary:hover::after {
+            opacity: 1;
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 5px 15px var(--shadow-color);
         }
 
         .btn-secondary {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
+            background: var(--glass-bg);
+            color: var(--text-color);
             border: 2px solid rgba(255, 255, 255, 0.3);
         }
 
@@ -176,21 +283,163 @@
             position: fixed;
             top: 20px;
             right: 20px;
-            background: rgba(255, 255, 255, 0.2);
+            background: var(--glass-bg);
             border: none;
             border-radius: 50%;
             width: 50px;
             height: 50px;
             cursor: pointer;
             font-size: 1.5em;
-            color: white;
+            color: var(--text-color);
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px var(--shadow-color);
         }
 
         .music-toggle:hover {
             background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1) rotate(15deg);
+        }
+
+        .help-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--glass-bg);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: var(--text-color);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px var(--shadow-color);
+        }
+
+        .help-button:hover {
+            background: rgba(255, 255, 255, 0.3);
             transform: scale(1.1);
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            animation: modalShow 0.3s ease-out;
+        }
+
+        .modal h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 5px;
+            transition: transform 0.3s ease;
+        }
+
+        .modal-close:hover {
+            transform: rotate(90deg);
+        }
+
+        .help-content {
+            text-align: left;
+            margin-bottom: 20px;
+        }
+
+        .help-content h3 {
+            color: var(--accent-color);
+            margin: 15px 0 10px;
+        }
+
+        .help-content p {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .help-content ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+
+        .help-content li {
+            margin-bottom: 8px;
+            position: relative;
+        }
+
+        .help-content li::before {
+            content: '•';
+            color: var(--accent-color);
+            position: absolute;
+            left: -15px;
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        @keyframes timerShine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes modalShow {
+            from { 
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes buttonPress {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
         }
 
         /* 모바일 최적화 */
@@ -204,9 +453,13 @@
                 margin-bottom: 15px;
             }
             
-            .score-display {
-                font-size: 1.3em;
-                margin-bottom: 15px;
+            .stats-container {
+                gap: 10px;
+            }
+            
+            .stat-box {
+                min-width: 100px;
+                padding: 8px 15px;
             }
             
             .simon-grid {
@@ -229,6 +482,13 @@
                 font-size: 0.9em;
                 min-height: 48px;
             }
+
+            .music-toggle,
+            .help-button {
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
+            }
         }
 
         @media (max-width: 480px) {
@@ -237,120 +497,45 @@
                 height: min(80px, 35vw);
                 font-size: min(2em, 12vw);
             }
-        }
 
-        .game-over {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .game-over-content {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-        }
-
-        .game-over h2 {
-            font-size: 2em;
-            margin-bottom: 20px;
-        }
-
-        .final-score {
-            font-size: 1.5em;
-            margin-bottom: 30px;
-            color: #f9ca24;
-        }
-
-        .share-section {
-            margin-top: 20px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-        }
-
-        .share-title {
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            color: #f9ca24;
-        }
-
-        .share-btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9em;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            background: #2196F3;
-            color: white;
-        }
-
-        .share-btn:hover {
-            background: #1976D2;
-            transform: translateY(-2px);
-        }
-
-        .copy-success {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            font-size: 1.1em;
-            z-index: 2000;
-            display: none;
-        }
-
-        @media (max-width: 600px) {
-            .game-container {
+            .modal-content {
                 padding: 20px;
-            }
-
-            h1 {
-                font-size: 2em;
-            }
-
-            .simon-button {
-                width: 100px;
-                height: 100px;
-                font-size: 2.5em;
-            }
-
-            .controls {
-                flex-direction: column;
-                align-items: center;
             }
         }
     </style>
 </head>
 <body>
-    <button class="music-toggle" onclick="toggleMusic()">🎵</button>
+    <button class="help-button" onclick="showHelp()">❔</button>
+    <button class="music-toggle" onclick="toggleMusic()">🔇</button>
     
     <div class="game-container">
         <h1>🎮 Simon Says</h1>
-        <div class="score-display">점수: <span id="score">0</span></div>
+        
+        <div class="difficulty-selector">
+            <button class="difficulty-btn active" onclick="setDifficulty('easy')">쉬움</button>
+            <button class="difficulty-btn" onclick="setDifficulty('normal')">보통</button>
+            <button class="difficulty-btn" onclick="setDifficulty('hard')">어려움</button>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-box">
+                <div class="stat-label">현재 점수</div>
+                <div class="stat-value" id="score">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">최고 기록</div>
+                <div class="stat-value" id="highScore">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">시퀀스 길이</div>
+                <div class="stat-value" id="sequenceLength">0</div>
+            </div>
+        </div>
+
         <div class="timer-bar">
             <div class="timer-fill" id="timer-fill"></div>
         </div>
+        
         <div class="game-status" id="game-status">게임을 시작하려면 시작 버튼을 누르세요!</div>
         
         <div class="simon-grid">
@@ -361,15 +546,28 @@
         </div>
         
         <div class="controls">
-            <button class="btn btn-primary" onclick="startGame()">게임 시작</button>
+            <button class="btn btn-primary" onclick="startGame()">
+                <span id="startBtnText">게임 시작</span>
+            </button>
             <a href="../../" class="btn btn-secondary">메인으로</a>
         </div>
     </div>
 
-    <div class="game-over" id="game-over">
-        <div class="game-over-content">
+    <div class="modal game-over" id="game-over">
+        <div class="modal-content">
+            <button class="modal-close" onclick="hideGameOver()">×</button>
             <h2>게임 종료!</h2>
-            <div class="final-score">최종 점수: <span id="final-score">0</span></div>
+            <div class="stats-container">
+                <div class="stat-box">
+                    <div class="stat-label">최종 점수</div>
+                    <div class="stat-value" id="final-score">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">최고 기록</div>
+                    <div class="stat-value" id="final-highScore">0</div>
+                </div>
+            </div>
+            
             <div class="controls">
                 <button class="btn btn-primary" onclick="restartGame()">다시 하기</button>
                 <a href="../../" class="btn btn-secondary">다른 게임</a>
@@ -377,24 +575,78 @@
             
             <div class="share-section">
                 <div class="share-title">🎯 친구들에게 도전해보세요!</div>
-                <button class="share-btn" onclick="copyToClipboard()">
-                    📋 결과 복사하기
+                <button class="btn btn-primary" onclick="copyToClipboard()">
+                    📋 결과 공유하기
                 </button>
             </div>
         </div>
     </div>
 
-    <div class="copy-success" id="copy-success">
-        텍스트가 클립보드에 복사되었습니다! 📋
-    </div>
+    <div class="modal" id="help-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="hideHelp()">×</button>
+            <h2>게임 설명</h2>
+            <div class="help-content">
+                <h3>🎮 게임 방법</h3>
+                <p>Simon Says는 순서를 기억하고 따라하는 기억력 게임입니다.</p>
+                <ul>
+                    <li>컴퓨터가 보여주는 색상 순서를 잘 기억하세요</li>
+                    <li>순서가 끝나면 같은 순서대로 버튼을 눌러주세요</li>
+                    <li>성공할 때마다 순서가 하나씩 늘어납니다</li>
+                    <li>틀리면 게임이 종료됩니다</li>
+                </ul>
+
+                <h3>🎯 난이도</h3>
+                <ul>
+                    <li>쉬움: 느린 속도, 긴 시간 제한</li>
+                    <li>보통: 중간 속도, 보통 시간 제한</li>
+                    <li>어려움: 빠른 속도, 짧은 시간 제한</li>
+                </ul>
+
+                <h3>💡 팁</h3>
+                <ul>
+                    <li>색상과 위치를 함께 기억하면 도움이 됩니다</li>
+                    <li>리듬에 맞춰 기억하면 더 쉽게 기억할 수 있어요</li>
+                    <li>실수하지 않도록 천천히 진행하세요</li>
+                </ul>
+            </div>
         </div>
     </div>
 
     <audio id="bgMusic" loop>
-        <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.wav" type="audio/wav">
+        <source src="https://onlineminigame.kro.kr/assets/audio/background.mp3" type="audio/mp3">
     </audio>
 
+    <audio id="redSound" src="https://onlineminigame.kro.kr/assets/audio/red.mp3"></audio>
+    <audio id="blueSound" src="https://onlineminigame.kro.kr/assets/audio/blue.mp3"></audio>
+    <audio id="greenSound" src="https://onlineminigame.kro.kr/assets/audio/green.mp3"></audio>
+    <audio id="yellowSound" src="https://onlineminigame.kro.kr/assets/audio/yellow.mp3"></audio>
+    <audio id="successSound" src="https://onlineminigame.kro.kr/assets/audio/success.mp3"></audio>
+    <audio id="failSound" src="https://onlineminigame.kro.kr/assets/audio/fail.mp3"></audio>
+
     <script>
+        // 게임 설정
+        const DIFFICULTY_SETTINGS = {
+            easy: {
+                sequenceDelay: 1000,
+                buttonDelay: 500,
+                timeLimit: 120,
+                scoreMultiplier: 1
+            },
+            normal: {
+                sequenceDelay: 800,
+                buttonDelay: 400,
+                timeLimit: 100,
+                scoreMultiplier: 1.5
+            },
+            hard: {
+                sequenceDelay: 600,
+                buttonDelay: 300,
+                timeLimit: 80,
+                scoreMultiplier: 2
+            }
+        };
+
         // 게임 상태 변수들
         let score = 0;
         let sequence = [];
@@ -405,66 +657,93 @@
         let timer = null;
         let timeLeft = 100;
         let musicPlaying = false;
+        let currentDifficulty = 'normal';
+        let highScore = parseInt(localStorage.getItem('highScore')) || 0;
 
-        // 색상별 사운드 효과 (실제로는 다른 사운드 파일을 사용해야 함)
+        // 색상별 사운드
         const sounds = {
-            red: new Audio('https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'),
-            blue: new Audio('https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'),
-            green: new Audio('https://www.soundjay.com/misc/sounds/bell-ringing-05.wav'),
-            yellow: new Audio('https://www.soundjay.com/misc/sounds/bell-ringing-05.wav')
+            red: document.getElementById('redSound'),
+            blue: document.getElementById('blueSound'),
+            green: document.getElementById('greenSound'),
+            yellow: document.getElementById('yellowSound'),
+            success: document.getElementById('successSound'),
+            fail: document.getElementById('failSound')
         };
 
-        // 개발자 도구 차단
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || 
-                (e.ctrlKey && e.shiftKey && e.key === 'C') || (e.ctrlKey && e.key === 'U')) {
-                e.preventDefault();
-                return false;
-            }
-        });
+        // 초기화
+        window.onload = function() {
+            updateHighScore();
+            document.getElementById('highScore').textContent = highScore;
+            disableButtons();
+        };
 
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            return false;
-        });
+        // 난이도 설정
+        function setDifficulty(difficulty) {
+            currentDifficulty = difficulty;
+            document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.difficulty-btn[onclick="setDifficulty('${difficulty}')"]`).classList.add('active');
+            
+            // 게임 중이면 재시작
+            if (gameActive) {
+                resetGame();
+            }
+            
+            // 시간 제한 업데이트
+            timeLeft = DIFFICULTY_SETTINGS[difficulty].timeLimit;
+            updateTimer();
+        }
 
         // 음악 토글
         function toggleMusic() {
             const music = document.getElementById('bgMusic');
+            const musicToggle = document.querySelector('.music-toggle');
+            
             if (musicPlaying) {
                 music.pause();
-                musicPlaying = false;
+                musicToggle.textContent = '🔇';
             } else {
                 music.play();
-                musicPlaying = true;
+                musicToggle.textContent = '🔊';
             }
+            musicPlaying = !musicPlaying;
         }
 
         // 게임 시작
         function startGame() {
+            if (gameActive) return;
+            
             score = 0;
             sequence = [];
             playerSequence = [];
             currentIndex = 0;
             gameActive = true;
-            timeLeft = 100;
+            timeLeft = DIFFICULTY_SETTINGS[currentDifficulty].timeLimit;
             
             updateScore();
             updateTimer();
+            updateSequenceLength();
             startTimer();
             generateSequence();
             showSequence();
+            
+            const startBtn = document.querySelector('.btn-primary');
+            startBtn.disabled = true;
+            startBtn.style.opacity = '0.7';
         }
 
         // 시퀀스 생성
         function generateSequence() {
             const colors = ['red', 'blue', 'green', 'yellow'];
             sequence.push(colors[Math.floor(Math.random() * colors.length)]);
+            updateSequenceLength();
         }
 
         // 시퀀스 표시
         function showSequence() {
             isShowingSequence = true;
+            disableButtons();
             document.getElementById('game-status').textContent = '시퀀스를 기억하세요!';
             
             let i = 0;
@@ -474,13 +753,15 @@
                     i++;
                 } else {
                     clearInterval(interval);
-                    isShowingSequence = false;
-                    playerSequence = [];
-                    currentIndex = 0;
-                    document.getElementById('game-status').textContent = '시퀀스를 따라해보세요!';
-                    enableButtons();
+                    setTimeout(() => {
+                        isShowingSequence = false;
+                        playerSequence = [];
+                        currentIndex = 0;
+                        document.getElementById('game-status').textContent = '시퀀스를 따라해보세요!';
+                        enableButtons();
+                    }, DIFFICULTY_SETTINGS[currentDifficulty].buttonDelay);
                 }
-            }, 800);
+            }, DIFFICULTY_SETTINGS[currentDifficulty].sequenceDelay);
         }
 
         // 버튼 하이라이트
@@ -496,7 +777,7 @@
             
             setTimeout(() => {
                 button.classList.remove('active');
-            }, 400);
+            }, DIFFICULTY_SETTINGS[currentDifficulty].buttonDelay);
         }
 
         // 버튼 활성화
@@ -504,6 +785,7 @@
             const buttons = document.querySelectorAll('.simon-button');
             buttons.forEach(button => {
                 button.style.pointerEvents = 'auto';
+                button.style.opacity = '1';
             });
         }
 
@@ -512,6 +794,7 @@
             const buttons = document.querySelectorAll('.simon-button');
             buttons.forEach(button => {
                 button.style.pointerEvents = 'none';
+                button.style.opacity = '0.7';
             });
         }
 
@@ -527,11 +810,20 @@
                 
                 if (currentIndex === sequence.length) {
                     // 시퀀스 완료
-                    score += sequence.length * 10;
+                    const baseScore = sequence.length * 10;
+                    const difficultyMultiplier = DIFFICULTY_SETTINGS[currentDifficulty].scoreMultiplier;
+                    const timeBonus = Math.floor(timeLeft / 10);
+                    score += Math.floor((baseScore + timeBonus) * difficultyMultiplier);
+                    
                     updateScore();
+                    updateHighScore();
+                    
+                    sounds.success.play();
                     currentIndex = 0;
                     playerSequence = [];
                     disableButtons();
+                    
+                    document.getElementById('game-status').textContent = '정확합니다! 다음 단계로 진행합니다.';
                     
                     setTimeout(() => {
                         generateSequence();
@@ -540,12 +832,14 @@
                 }
             } else {
                 // 실패
+                sounds.fail.play();
                 gameOver();
             }
         }
 
         // 타이머 시작
         function startTimer() {
+            clearInterval(timer);
             timer = setInterval(() => {
                 timeLeft--;
                 updateTimer();
@@ -559,13 +853,34 @@
         // 타이머 업데이트
         function updateTimer() {
             const timerFill = document.getElementById('timer-fill');
-            const percentage = (timeLeft / 100) * 100;
+            const percentage = (timeLeft / DIFFICULTY_SETTINGS[currentDifficulty].timeLimit) * 100;
             timerFill.style.width = percentage + '%';
+            
+            // 시간이 부족할 때 경고 효과
+            if (percentage < 30) {
+                timerFill.style.backgroundColor = '#ff6b6b';
+            } else {
+                timerFill.style.backgroundColor = '';
+            }
         }
 
         // 점수 업데이트
         function updateScore() {
             document.getElementById('score').textContent = score;
+        }
+
+        // 최고 점수 업데이트
+        function updateHighScore() {
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('highScore', highScore);
+                document.getElementById('highScore').textContent = highScore;
+            }
+        }
+
+        // 시퀀스 길이 업데이트
+        function updateSequenceLength() {
+            document.getElementById('sequenceLength').textContent = sequence.length;
         }
 
         // 게임 오버
@@ -574,69 +889,63 @@
             clearInterval(timer);
             disableButtons();
             
-            document.getElementById('final-score').textContent = score;
-            document.getElementById('game-over').style.display = 'flex';
+            const startBtn = document.querySelector('.btn-primary');
+            startBtn.disabled = false;
+            startBtn.style.opacity = '1';
+            
+            updateGameOverText();
+            showGameOver();
+            
+            document.getElementById('game-status').textContent = '게임 오버! 다시 시작하려면 시작 버튼을 누르세요.';
         }
 
         // 게임 재시작
         function restartGame() {
-            document.getElementById('game-over').style.display = 'none';
+            hideGameOver();
             startGame();
+        }
+
+        // 게임 오버 숨김
+        function hideGameOver() {
+            document.getElementById('game-over').style.display = 'none';
+        }
+
+        // 게임 오버 표시
+        function showGameOver() {
+            document.getElementById('game-over').style.display = 'flex';
+        }
+
+        // 게임 오버 텍스트 업데이트
+        function updateGameOverText() {
+            document.getElementById('final-score').textContent = score;
+            document.getElementById('final-highScore').textContent = highScore;
+        }
+
+        // 도움말 모달 표시
+        function showHelp() {
+            document.getElementById('help-modal').style.display = 'flex';
+        }
+
+        // 도움말 모달 숨김
+        function hideHelp() {
+            document.getElementById('help-modal').style.display = 'none';
         }
 
         // 공유 텍스트 생성
         function generateShareText() {
-            const finalScore = document.getElementById('final-score').textContent;
-            
-            return `🧩 Simon Says 게임 결과!\n\n` +
-                   `🎯 최종 점수: ${finalScore}점\n\n` +
-                   `💪 너도 도전해봐! 순서 기억 게임으로 두뇌를 훈련해보세요!\n\n` +
-                   `🎮 게임 링크: https://onlineminigame.kro.kr/`;
+            return `⭐ Simon Says 게임 결과 ⭐\n\n` +
+                   `🎯 최종 점수: ${score}점\n` +
+                   `🏆 최고 기록: ${highScore}점\n` +
+                   `🎮 난이도: ${{'easy': '쉬움', 'normal': '보통', 'hard': '어려움'}[currentDifficulty]}\n` +
+                   `🔢 기억한 시퀀스: ${sequence.length}개\n\n` +
+                   `🎮 https://onlineminigame.kro.kr/games/simon-says/game.html\n\n` +
+                   `💪 너도 도전해봐! 순서 기억 게임으로 두뇌를 훈련해보세요!`;
         }
 
         // 클립보드 복사
         function copyToClipboard() {
             const shareText = generateShareText();
-            
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(shareText).then(() => {
-                    showCopySuccess();
-                }).catch(err => {
-                    fallbackCopyTextToClipboard(shareText);
-                });
-            } else {
-                fallbackCopyTextToClipboard(shareText);
-            }
-        }
-
-        // 클립보드 복사 폴백 (구형 브라우저 지원)
-        function fallbackCopyTextToClipboard(text) {
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            textArea.style.position = 'fixed';
-            textArea.style.left = '-999999px';
-            textArea.style.top = '-999999px';
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            
-            try {
-                document.execCommand('copy');
-                showCopySuccess();
-            } catch (err) {
-                console.error('클립보드 복사 실패:', err);
-            }
-            
-            document.body.removeChild(textArea);
-        }
-
-        // 복사 성공 메시지 표시
-        function showCopySuccess() {
-            const copySuccess = document.getElementById('copy-success');
-            copySuccess.style.display = 'block';
-            setTimeout(() => {
-                copySuccess.style.display = 'none';
-            }, 2000);
+            navigator.clipboard.writeText(shareText);
         }
 
         // 초기 버튼 비활성화
