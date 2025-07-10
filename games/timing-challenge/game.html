@@ -14,12 +14,21 @@
         body {
             font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #ff6b6b 0%, #feca57 50%, #48dbfb 100%);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             color: white;
             overflow: hidden;
+            padding: 20px;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .game-container {
@@ -31,12 +40,32 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             max-width: 600px;
             width: 90%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            animation: shine 5s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes shine {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
 
         h1 {
-            font-size: 2.5em;
+            font-size: clamp(1.8em, 4vw, 2.5em);
             margin-bottom: 20px;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
         }
 
         .game-info {
@@ -47,58 +76,99 @@
             background: rgba(255, 255, 255, 0.2);
             padding: 15px;
             border-radius: 10px;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
-
-
         .timer-display {
-            font-size: 3em;
+            font-size: clamp(2em, 6vw, 3em);
             font-weight: bold;
             margin: 30px 0;
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
             min-height: 80px;
+            background: linear-gradient(45deg, #ff6b6b, #ffd700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
         .target-time {
             font-size: 1.5em;
-            color: #feca57;
+            color: #ffd700;
             font-weight: bold;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
 
         .game-status {
             font-size: 1.3em;
             margin-bottom: 30px;
             min-height: 40px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
         }
 
         .click-button {
-            width: 200px;
-            height: 200px;
+            width: min(200px, 50vw);
+            height: min(200px, 50vw);
             border: none;
             border-radius: 50%;
             background: linear-gradient(135deg, #ff6b6b, #ee5a52);
             color: white;
-            font-size: 2em;
+            font-size: clamp(1.5em, 4vw, 2em);
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-            margin-bottom: 30px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3),
+                       inset 0 2px 10px rgba(255, 255, 255, 0.3);
+            margin: 0 auto 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .click-button::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, rgba(255,255,255,0) 70%);
+            transform: scale(0);
+            transition: transform 0.5s ease-out;
+        }
+
+        .click-button:hover::after {
+            transform: scale(1);
         }
 
         .click-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+            transform: scale(1.05) translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4),
+                       inset 0 2px 10px rgba(255, 255, 255, 0.3);
         }
 
         .click-button:active {
-            transform: scale(0.95);
+            transform: scale(0.95) translateY(2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2),
+                       inset 0 2px 10px rgba(255, 255, 255, 0.3);
         }
 
         .click-button.disabled {
-            background: #95a5a6;
+            background: linear-gradient(135deg, #95a5a6, #7f8c8d);
             cursor: not-allowed;
             transform: none;
+            opacity: 0.7;
         }
 
         .click-button.disabled:hover {
@@ -110,24 +180,48 @@
             font-size: 1.2em;
             margin-bottom: 20px;
             min-height: 30px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
         }
 
         .accuracy-bar {
             width: 100%;
             height: 20px;
-            background: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.2);
             border-radius: 10px;
             margin-bottom: 20px;
             overflow: hidden;
             position: relative;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.2);
         }
 
         .accuracy-fill {
             height: 100%;
             background: linear-gradient(90deg, #ff6b6b, #feca57, #48dbfb);
             width: 0%;
-            transition: width 0.5s ease;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             border-radius: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .accuracy-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(200%); }
         }
 
         .target-line {
@@ -136,9 +230,10 @@
             left: 50%;
             width: 4px;
             height: 100%;
-            background: #feca57;
+            background: #ffd700;
             transform: translateX(-50%);
-            box-shadow: 0 0 10px rgba(254, 202, 87, 0.8);
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+            z-index: 1;
         }
 
         .controls {
@@ -146,6 +241,7 @@
             gap: 15px;
             justify-content: center;
             flex-wrap: wrap;
+            margin-top: 20px;
         }
 
         .btn {
@@ -155,30 +251,35 @@
             cursor: pointer;
             font-size: 1em;
             font-weight: bold;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             text-decoration: none;
             display: inline-block;
+            min-width: 120px;
+            text-align: center;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
         }
 
         .btn-secondary {
             background: rgba(255, 255, 255, 0.2);
             color: white;
             border: 2px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(5px);
         }
 
         .btn-secondary:hover {
             background: rgba(255, 255, 255, 0.3);
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
         }
 
         .music-toggle {
@@ -195,14 +296,46 @@
             color: white;
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         .music-toggle:hover {
-            background: rgba(255, 255, 255, 0.3);
             transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
         }
 
-        .game-over {
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+
+            .game-container {
+                padding: 20px;
+            }
+
+            .controls {
+                gap: 10px;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9em;
+                min-width: 100px;
+            }
+
+            .music-toggle {
+                top: 10px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+                font-size: 1.2em;
+            }
+        }
+
+        .game-over-modal {
             position: fixed;
             top: 0;
             left: 0;
@@ -215,498 +348,285 @@
             z-index: 1000;
         }
 
-        .game-over-content {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(20px);
-            padding: 40px;
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
             border-radius: 20px;
             text-align: center;
-            max-width: 500px;
+            max-width: 400px;
             width: 90%;
+            color: #333;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.5s ease-out;
         }
 
-        .game-over h2 {
-            font-size: 2em;
+        @keyframes modalSlideIn {
+            0% { transform: translateY(-20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
             margin-bottom: 20px;
         }
 
-        .final-stats {
-            font-size: 1.2em;
-            margin-bottom: 30px;
-            line-height: 1.6;
+        .final-score {
+            font-size: 2em;
+            margin: 20px 0;
+            color: #2c3e50;
         }
 
-        .best-time {
-            color: #feca57;
-            font-weight: bold;
-        }
-
-        .average-time {
-            color: #48dbfb;
-            font-weight: bold;
-        }
-
-        .share-section {
-            margin-top: 20px;
-            padding: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-        }
-
-        .share-title {
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            color: #feca57;
-        }
-
-        .share-buttons {
+        .modal-actions {
             display: flex;
             gap: 10px;
             justify-content: center;
-            flex-wrap: wrap;
+            margin-top: 20px;
         }
 
-        .share-btn {
-            padding: 10px 20px;
+        .action-btn {
+            padding: 12px 24px;
             border: none;
-            border-radius: 20px;
+            border-radius: 25px;
             cursor: pointer;
-            font-size: 0.9em;
+            font-size: 1em;
             font-weight: bold;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 5px;
+            min-width: 120px;
         }
 
-        .share-btn.copy {
-            background: #2196F3;
+        .action-btn.primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
         }
 
-        .share-btn.copy:hover {
-            background: #1976D2;
-            transform: translateY(-2px);
+        .action-btn.secondary {
+            background: rgba(0, 0, 0, 0.1);
+            color: #333;
         }
 
-        .copy-success {
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .copy-notification {
             position: fixed;
-            top: 50%;
+            bottom: 20px;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.8);
             color: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            font-size: 1.1em;
-            z-index: 2000;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
             display: none;
-        }
-
-        @media (max-width: 768px) {
-            .game-container {
-                padding: 20px;
-                margin: 10px;
-                width: 95%;
-            }
-
-            h1 {
-                font-size: 2em;
-                margin-bottom: 15px;
-            }
-
-            .game-info {
-                flex-direction: column;
-                gap: 10px;
-                padding: 10px;
-            }
-
-            .target-time {
-                font-size: 1.3em;
-            }
-
-            .timer-display {
-                font-size: 2.5em;
-                margin: 20px 0;
-                min-height: 60px;
-            }
-
-            .game-status {
-                font-size: 1.1em;
-                margin-bottom: 20px;
-            }
-
-            .click-button {
-                width: 180px;
-                height: 180px;
-                font-size: 1.8em;
-                margin-bottom: 20px;
-            }
-
-            .result-display {
-                font-size: 1em;
-                margin-bottom: 15px;
-            }
-
-            .accuracy-bar {
-                height: 15px;
-                margin-bottom: 15px;
-            }
-
-            .controls {
-                gap: 10px;
-            }
-
-            .btn {
-                padding: 10px 20px;
-                font-size: 0.9em;
-            }
-
-            .share-section {
-                margin-top: 15px;
-                padding: 15px;
-            }
-
-            .share-title {
-                font-size: 1.1em;
-                margin-bottom: 10px;
-            }
-
-            .share-btn {
-                padding: 12px 20px;
-                font-size: 1em;
-            }
-
-            .game-over-content {
-                padding: 30px 20px;
-                max-width: 90%;
-            }
-
-            .game-over h2 {
-                font-size: 1.8em;
-            }
-
-            .final-stats {
-                font-size: 1.1em;
-                line-height: 1.5;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .game-container {
-                padding: 15px;
-                margin: 5px;
-            }
-
-            h1 {
-                font-size: 1.8em;
-            }
-
-            .timer-display {
-                font-size: 2.2em;
-            }
-
-            .click-button {
-                width: 150px;
-                height: 150px;
-                font-size: 1.5em;
-            }
-
-            .btn {
-                padding: 8px 16px;
-                font-size: 0.85em;
-            }
-
-            .share-btn {
-                padding: 10px 16px;
-                font-size: 0.9em;
-            }
-        }
-
-        /* 터치 디바이스 최적화 */
-        @media (hover: none) and (pointer: coarse) {
-            .click-button {
-                min-height: 60px;
-                min-width: 60px;
-            }
-
-            .btn {
-                min-height: 44px;
-                min-width: 44px;
-            }
-
-            .share-btn {
-                min-height: 44px;
-                min-width: 44px;
-            }
+            z-index: 1000;
         }
     </style>
 </head>
 <body>
-    <button class="music-toggle" onclick="toggleMusic()">🎵</button>
-    
     <div class="game-container">
         <h1>⏱️ 7.77초 타이밍 챌린지</h1>
-        
+        <div class="game-info">
+            <div class="best-time">최고 기록: <span id="bestTime">-</span></div>
+            <div class="attempt-count">시도 횟수: <span id="attemptCount">0</span></div>
+        </div>
         <div class="timer-display" id="timer">0.00</div>
-        
-        <div class="game-status" id="game-status">시작 버튼을 눌러 게임을 시작하세요!</div>
-        
-        <button class="click-button" id="click-button" onclick="handleClick()" ontouchstart="handleTouchStart(event)" ontouchend="handleTouchEnd(event)">시작!</button>
-        
-        <div class="result-display" id="result-display"></div>
-        
+        <div class="game-status" id="gameStatus">시작 버튼을 눌러주세요!</div>
+        <button class="click-button" id="clickButton">시작</button>
+        <div class="result-display" id="resultDisplay"></div>
         <div class="accuracy-bar">
-            <div class="accuracy-fill" id="accuracy-fill"></div>
             <div class="target-line"></div>
+            <div class="accuracy-fill" id="accuracyFill"></div>
         </div>
-        
         <div class="controls">
-            <button class="btn btn-primary" onclick="startGame()">새 게임</button>
-            <a href="../../" class="btn btn-secondary">메인으로</a>
+            <button class="btn btn-primary" id="resetButton">다시 시작</button>
+            <a href="../../" class="btn btn-secondary">다른 게임</a>
         </div>
     </div>
 
-    <div class="game-over" id="game-over">
-        <div class="game-over-content">
-            <h2>게임 종료!</h2>
-            <div class="final-stats">
-                <div>정확도: <span id="final-score">0</span>%</div>
-                <div class="best-time">기록: <span id="best-accuracy">0</span>초</div>
-                <div class="average-time">오차: <span id="average-error">0</span>초</div>
+    <div class="game-over-modal" id="gameOverModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>🎯 도전 결과</h2>
             </div>
-            <div class="controls">
-                <button class="btn btn-primary" onclick="restartGame()">다시 하기</button>
-                <a href="../../" class="btn btn-secondary">다른 게임</a>
+            <div class="final-score">
+                <span id="finalTime">0.00</span>초
             </div>
-            
-            <div class="share-section">
-                <div class="share-title">🎯 친구들에게 도전해보세요!</div>
-                <div class="share-buttons">
-                    <button class="share-btn copy" onclick="copyToClipboard()">
-                        📋 결과 복사하기
-                    </button>
-                </div>
+            <div id="resultMessage"></div>
+            <div class="modal-actions">
+                <button class="action-btn primary" onclick="resetGame()">다시 도전</button>
+                <button class="action-btn secondary" onclick="shareResult()">결과 공유</button>
             </div>
         </div>
     </div>
 
-    <div class="copy-success" id="copy-success">
-        텍스트가 클립보드에 복사되었습니다! 📋
-    </div>
-        </div>
+    <div id="copySuccess" class="copy-notification">
+        📋 클립보드에 복사되었습니다!
     </div>
 
-    <audio id="bgMusic" loop>
-        <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.wav" type="audio/wav">
-    </audio>
+    <button class="music-toggle" id="musicToggle">🔊</button>
+    <audio id="bgm" src="bgm.mp3" loop autoplay muted></audio>
 
     <script>
-        // 게임 상태 변수들
-        let gameActive = false;
-        let startTime = 0;
-        let timerInterval = null;
-        let currentTime = 0;
-        let finalResult = null;
-        let musicPlaying = false;
-
         const TARGET_TIME = 7.77;
+        let timer;
+        let startTime;
+        let isRunning = false;
+        let musicPlaying = false;
+        let attemptCount = 0;
+        let finalResult = {
+            time: 0,
+            timeDiff: 0,
+            accuracy: 0,
+            attempts: 0
+        };
 
-        // 개발자 도구 차단
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || 
-                (e.ctrlKey && e.shiftKey && e.key === 'C') || (e.ctrlKey && e.key === 'U')) {
-                e.preventDefault();
-                return false;
-            }
-        });
+        // 초기화
+        window.onload = function() {
+            const clickButton = document.getElementById('clickButton');
+            const resetButton = document.getElementById('resetButton');
+            const musicToggle = document.getElementById('musicToggle');
+            
+            clickButton.addEventListener('click', handleClick);
+            resetButton.addEventListener('click', resetGame);
+            musicToggle.addEventListener('click', toggleMusic);
+            
+            resetGame();
+            updateAttemptCount();
+        };
 
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            return false;
-        });
+        // 시도 횟수 업데이트
+        function updateAttemptCount() {
+            document.getElementById('attemptCount').textContent = attemptCount;
+        }
 
         // 음악 토글
         function toggleMusic() {
-            const music = document.getElementById('bgMusic');
+            const music = document.getElementById('bgm');
+            const musicToggle = document.getElementById('musicToggle');
+            
             if (musicPlaying) {
                 music.pause();
-                musicPlaying = false;
+                musicToggle.textContent = '🔇';
             } else {
                 music.play();
-                musicPlaying = true;
+                musicToggle.textContent = '🔊';
             }
-        }
-
-        // 게임 시작
-        function startGame() {
-            gameActive = false;
-            currentTime = 0;
-            finalResult = null;
-            
-            resetTimer();
-            document.getElementById('game-status').textContent = '시작 버튼을 눌러 게임을 시작하세요!';
-            document.getElementById('result-display').textContent = '';
-            document.getElementById('accuracy-fill').style.width = '0%';
-            
-            const clickButton = document.getElementById('click-button');
-            clickButton.textContent = '시작!';
-            clickButton.className = 'click-button';
-        }
-
-        // 타이머 시작
-        function startTimer() {
-            startTime = Date.now();
-            gameActive = true;
-            currentTime = 0;
-            
-            timerInterval = setInterval(() => {
-                currentTime = (Date.now() - startTime) / 1000;
-                document.getElementById('timer').textContent = currentTime.toFixed(2);
-            }, 10);
-            
-            document.getElementById('game-status').textContent = '7.77초에 맞춰서 클릭하세요!';
-            document.getElementById('click-button').textContent = '클릭!';
-        }
-
-        // 타이머 리셋
-        function resetTimer() {
-            if (timerInterval) {
-                clearInterval(timerInterval);
-                timerInterval = null;
-            }
-            document.getElementById('timer').textContent = '0.00';
+            musicPlaying = !musicPlaying;
         }
 
         // 클릭 처리
         function handleClick() {
-            if (!gameActive) {
-                startTimer();
-                return;
+            const clickButton = document.getElementById('clickButton');
+            
+            if (!isRunning) {
+                startGame();
+                clickButton.className = 'click-button';
+            } else {
+                stopTimer();
+                clickButton.className = 'click-button disabled';
+                attemptCount++;
+                updateAttemptCount();
             }
+        }
 
-            // 타이머 정지
-            clearInterval(timerInterval);
-            gameActive = false;
+        // 게임 초기화
+        function resetGame() {
+            clearInterval(timer);
+            isRunning = false;
             
-            // 결과 계산
+            resetTimer();
+            document.getElementById('gameStatus').textContent = '시작 버튼을 눌러주세요!';
+            document.getElementById('resultDisplay').textContent = '';
+            document.getElementById('accuracyFill').style.width = '0%';
+            
+            const clickButton = document.getElementById('clickButton');
+            clickButton.textContent = '시작';
+            clickButton.className = 'click-button';
+            
+            document.getElementById('gameOverModal').style.display = 'none';
+        }
+
+        // 타이머 초기화
+        function resetTimer() {
+            document.getElementById('timer').textContent = '0.00';
+        }
+
+        // 게임 시작
+        function startGame() {
+            isRunning = true;
+            startTime = Date.now();
+            
+            timer = setInterval(() => {
+                const currentTime = (Date.now() - startTime) / 1000;
+                document.getElementById('timer').textContent = currentTime.toFixed(2);
+            }, 10);
+            
+            document.getElementById('gameStatus').textContent = '7.77초에 맞춰서 클릭하세요!';
+            document.getElementById('clickButton').textContent = '클릭!';
+        }
+
+        // 타이머 정지
+        function stopTimer() {
+            clearInterval(timer);
+            isRunning = false;
+            
+            const currentTime = (Date.now() - startTime) / 1000;
             const timeDiff = Math.abs(currentTime - TARGET_TIME);
-            const accuracy = Math.max(0, 100 - (timeDiff * 100));
+            const accuracy = Math.max(0, 100 - (timeDiff / TARGET_TIME) * 100);
             
-            // 결과 저장
             finalResult = {
                 time: currentTime,
+                timeDiff: timeDiff,
                 accuracy: accuracy,
-                timeDiff: timeDiff
+                attempts: attemptCount
             };
             
             // 결과 표시
             const resultText = `시간: ${currentTime.toFixed(2)}초 | 오차: ${timeDiff.toFixed(2)}초 | 정확도: ${accuracy.toFixed(1)}%`;
-            document.getElementById('result-display').textContent = resultText;
+            document.getElementById('resultDisplay').textContent = resultText;
             
             // 정확도 바 업데이트
-            const accuracyFill = document.getElementById('accuracy-fill');
+            const accuracyFill = document.getElementById('accuracyFill');
             const accuracyPercent = (currentTime / (TARGET_TIME * 2)) * 100;
             accuracyFill.style.width = Math.min(100, accuracyPercent) + '%';
             
-            // 게임 종료
+            // 게임 오버 표시
             showGameOver();
         }
 
-        // 터치 이벤트 처리 (모바일 최적화)
-        function handleTouchStart(event) {
-            event.preventDefault();
-            // 터치 시작 시 시각적 피드백
-            event.target.style.transform = 'scale(0.95)';
-        }
-
-        function handleTouchEnd(event) {
-            event.preventDefault();
-            // 터치 종료 시 원래 크기로 복원
-            event.target.style.transform = 'scale(1)';
-            // 클릭 처리
-            handleClick();
-        }
-
-
-
         // 게임 오버 표시
         function showGameOver() {
-            document.getElementById('final-score').textContent = finalResult.accuracy.toFixed(1);
-            document.getElementById('best-accuracy').textContent = finalResult.time.toFixed(2);
-            document.getElementById('average-error').textContent = finalResult.timeDiff.toFixed(2);
-            document.getElementById('game-over').style.display = 'flex';
-        }
-
-        // 게임 재시작
-        function restartGame() {
-            document.getElementById('game-over').style.display = 'none';
-            startGame();
+            document.getElementById('finalTime').textContent = finalResult.time.toFixed(2);
+            document.getElementById('resultMessage').textContent = `정확도: ${finalResult.accuracy.toFixed(1)}% | 오차: ${finalResult.timeDiff.toFixed(2)}초`;
+            document.getElementById('gameOverModal').style.display = 'flex';
         }
 
         // 공유 텍스트 생성
         function generateShareText() {
-            const accuracy = document.getElementById('final-score').textContent;
-            const time = document.getElementById('best-accuracy').textContent;
-            const error = document.getElementById('average-error').textContent;
-            
             return `⏱️ 7.77초 타이밍 챌린지 결과!\n\n` +
-                   `🎯 정확도: ${accuracy}%\n` +
-                   `⏰ 기록: ${time}초\n` +
-                   `📊 오차: ${error}초\n\n` +
-                   `💪 너도 도전해봐! 정확한 타이밍 감각을 테스트해보세요!\n\n` +
-                   `🎮 게임 링크: https://onlineminigame.kro.kr/`;
+                   `🎯 기록: ${finalResult.time.toFixed(2)}초\n` +
+                   `📊 정확도: ${finalResult.accuracy.toFixed(1)}%\n` +
+                   `🔄 시도 횟수: ${finalResult.attempts}회\n` +
+                   `🎮 https://onlineminigame.kro.kr/ 에서 도전해보세요!`;
         }
 
-
-
-        // 클립보드 복사
-        function copyToClipboard() {
+        // 결과 공유
+        function shareResult() {
             const shareText = generateShareText();
-            
-            if (navigator.clipboard) {
-                navigator.clipboard.writeText(shareText).then(() => {
-                    showCopySuccess();
-                }).catch(err => {
-                    fallbackCopyTextToClipboard(shareText);
-                });
-            } else {
-                fallbackCopyTextToClipboard(shareText);
-            }
-        }
-
-        // 클립보드 복사 폴백 (구형 브라우저 지원)
-        function fallbackCopyTextToClipboard(text) {
-            const textArea = document.createElement('textarea');
-            textArea.value = text;
-            textArea.style.position = 'fixed';
-            textArea.style.left = '-999999px';
-            textArea.style.top = '-999999px';
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            
-            try {
-                document.execCommand('copy');
+            navigator.clipboard.writeText(shareText).then(() => {
                 showCopySuccess();
-            } catch (err) {
-                console.error('클립보드 복사 실패:', err);
-            }
-            
-            document.body.removeChild(textArea);
+            });
         }
 
         // 복사 성공 메시지 표시
         function showCopySuccess() {
-            const copySuccess = document.getElementById('copy-success');
+            const copySuccess = document.getElementById('copySuccess');
             copySuccess.style.display = 'block';
             setTimeout(() => {
                 copySuccess.style.display = 'none';
             }, 2000);
         }
-
-        // 게임 시작
-        startGame();
     </script>
 </body>
 </html> 

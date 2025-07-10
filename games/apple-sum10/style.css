@@ -678,3 +678,19 @@ body {
     transform: translateY(-2px);
   }
 }
+
+/* 데스크톱 버전에서 사과 크기 증가 */
+@media (min-width: 769px) {
+  .apple-emoji {
+    font-size: min(3em, 10vw);
+  }
+
+  .apple-number {
+    font-size: min(2em, 6vw);
+  }
+
+  .apple:hover .apple-emoji,
+  .apple:hover .apple-number {
+    transform: translate(-50%, -50%) scale(1.15);
+  }
+}
