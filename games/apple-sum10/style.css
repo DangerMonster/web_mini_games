@@ -32,8 +32,6 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  /* 모바일 스크롤 최적화 */
-  overflow-y: auto;
 }
 
 /* 게임 헤더 */
