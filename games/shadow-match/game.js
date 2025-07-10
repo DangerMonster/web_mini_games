@@ -65,17 +65,26 @@ function handleChoice(idx) {
   const choices = shadowChoices.querySelectorAll('.shadow-choice');
   choices.forEach((el, i) => el.classList.remove('selected'));
   choices[idx].classList.add('selected');
+  
   if (idx === question.answer) {
     score += 10;
     updateScore();
     messageEl.textContent = '정답! +10점';
-    setTimeout(() => { messageEl.textContent = ''; }, 700);
+    choices[idx].classList.add('correct');
+    setTimeout(() => { 
+      messageEl.textContent = ''; 
+      choices[idx].classList.remove('correct');
+    }, 700);
     setTimeout(() => newQuestion(), 700);
   } else {
     score = Math.max(0, score - 5);
     updateScore();
     messageEl.textContent = '오답! -5점';
-    setTimeout(() => { messageEl.textContent = ''; }, 700);
+    choices[idx].classList.add('wrong');
+    setTimeout(() => { 
+      messageEl.textContent = ''; 
+      choices[idx].classList.remove('wrong');
+    }, 700);
     setTimeout(() => newQuestion(), 700);
   }
 }
