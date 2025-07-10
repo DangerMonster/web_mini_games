@@ -10,7 +10,9 @@ body {
   background: linear-gradient(135deg, #ff0000 0%, #ff3333 25%, #ff6666 50%, #ff9999 75%, #ffcccc 100%);
   min-height: 100vh;
   color: #333;
+  /* 모바일 스크롤 허용 */
   overflow-x: hidden;
+  overflow-y: auto;
   /* 배경 애니메이션 */
   background-size: 400% 400%;
   animation: gradientShift 15s ease infinite;
@@ -30,6 +32,8 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  /* 모바일 스크롤 최적화 */
+  overflow-y: auto;
 }
 
 /* 게임 헤더 */
@@ -173,8 +177,8 @@ body {
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
   backdrop-filter: blur(20px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  /* 모바일 터치 최적화 */
-  touch-action: manipulation;
+  /* 모바일 터치 최적화 - 스크롤 허용 */
+  touch-action: pan-y;
   -webkit-user-select: none;
   user-select: none;
   position: relative;

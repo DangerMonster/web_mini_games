@@ -932,7 +932,7 @@
             const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             
             const difficultyNames = { 'easy': '쉬움', 'normal': '보통', 'hard': '어려움' };
-            const text = `🧩 스도쿠 ${difficultyNames[currentDifficulty]} 난이도 완성! ⏱️ ${timeString}\n\n🎮 인터넷 게임 모음에서 도전해보세요!`;
+            const text = `🧩 스도쿠 ${difficultyNames[currentDifficulty]} 난이도 완성! ⏱️ ${timeString}\n\n🎮 https://onlineminigame.kro.kr/ 에서 도전해보세요!`;
             
             navigator.clipboard.writeText(text).then(() => {
                 const success = document.getElementById('copy-success');

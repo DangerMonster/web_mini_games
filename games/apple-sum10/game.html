@@ -93,7 +93,7 @@
     // 결과 복사 함수
     function copyResult() {
       const score = document.getElementById('score').textContent;
-      const text = `🍎 사과 합계 게임에서 ${score}점을 획득했습니다!\n\n🎮 인터넷 게임 모음에서 도전해보세요!`;
+      const text = `🍎 사과 합계 게임에서 ${score}점을 획득했습니다!\n\n🎮 https://onlineminigame.kro.kr/ 에서 도전해보세요!`;
       
       navigator.clipboard.writeText(text).then(() => {
         const notification = document.getElementById('copy-success');
